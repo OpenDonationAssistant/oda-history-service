@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: io.github.opendonationassistant
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [annotation-api, app-name, awaitility, data, data-jdbc, flyway, http-client-test, java, java-application, jdbc-hikari, junit, logback, maven, maven-enforcer-plugin, micronaut-aot, micronaut-http-validation, netty-server, openapi, openapi-explorer, postgres, problem-json, rabbitmq, readme, security-annotations, security-jwt, serialization-jackson, shade, static-resources, test-resources, testcontainers, yaml, yaml-build]

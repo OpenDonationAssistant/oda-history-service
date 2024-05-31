@@ -1,0 +1,35 @@
+micronaut:
+  application:
+    name: oda-history-service
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      openapi-explorer:
+        paths: classpath:META-INF/swagger/views/openapi-explorer
+        mapping: /openapi-explorer/**
+  security:
+    authentication: bearer
+    token:
+      bearer:
+        enabled: true
+      cookie:
+        enabled: true
+      jwt:
+        signatures:
+          jwks:
+            keycloak:
+              url: https://auth.oda.digital/realms/ODA/protocol/openid-connect/certs
+endpoints:
+  flyway:
+    enabled: true
+flyway:
+  datasources:
+    default:
+      enabled: true
+      baseline-on-migrate: true
+jpa:
+  default:
+    entity-scan:
+        packages: 'io.github.opendonationassistant'

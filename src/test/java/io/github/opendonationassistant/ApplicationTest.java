@@ -1,0 +1,40 @@
+package io.github.opendonationassistant;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.restassured.specification.RequestSpecification;
+import jakarta.inject.Inject;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Test;
+
+@MicronautTest(environments = "allinone")
+public class ApplicationTest {
+
+  @Inject
+  public CommandSender commandSender;
+
+  @Inject
+  public HistoryItemRepository repository;
+
+  @Test
+  public void testHandlingUpdateHistoryCommand() {
+    var item = new HistoryItem();
+    item.setId("id");
+    item.setAmount(new Amount(100, 0, "RUB"));
+    item.setRecipientId("recipientId");
+    item.setPaymentId("paymentId");
+    item.setNickname("nickname");
+
+    var command = new HistoryCommand();
+    command.setType("update");
+    command.setPartial(item);
+
+    commandSender.send(
+      RabbitConfiguration.HISTORY_COMMANDS_ROUTING_KEY,
+      command
+    );
+    Awaitility.await().until(() -> repository.findById("id").isPresent());
+  }
+}
