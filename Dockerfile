@@ -1,5 +1,5 @@
-FROM fedora:39
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
-COPY target/oda-history-service /app
+COPY target/oda-history-service-0.1.jar /app
 
-CMD ["./oda-history-service"]
+CMD ["java","--add-opens","java.base/java.time=ALL-UNNAMED","-jar","oda-history-service-0.1.jar"]
