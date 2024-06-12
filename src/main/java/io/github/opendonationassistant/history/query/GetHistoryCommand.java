@@ -1,14 +1,12 @@
 package io.github.opendonationassistant.history.query;
 
-import java.util.List;
-import java.util.Optional;
-
 import io.github.opendonationassistant.Amount;
 import io.github.opendonationassistant.HistoryItem;
-import io.github.opendonationassistant.HistoryItemData;
 import io.github.opendonationassistant.HistoryItemRepository;
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.serde.annotation.Serdeable;
+import java.util.Optional;
 
 @Serdeable
 public class GetHistoryCommand {
@@ -18,8 +16,11 @@ public class GetHistoryCommand {
   private Optional<Amount> minAmount;
   private Optional<Amount> maxAmount;
 
-  public List<HistoryItem> execute(HistoryItemRepository repository){
-    return repository.findByRecipientId(recipientId);
+  public Page<HistoryItem> execute(
+    HistoryItemRepository repository,
+    Pageable pageable
+  ) {
+    return repository.findByRecipientId(recipientId, pageable);
   }
 
   public String getRecipientId() {

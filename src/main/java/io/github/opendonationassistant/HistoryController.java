@@ -21,9 +21,8 @@ public class HistoryController {
   @Secured(SecurityRule.IS_ANONYMOUS)
   public Page<HistoryItem> getHistory(
     Pageable pageable,
-    GetHistoryCommand command
+    @Body GetHistoryCommand command
   ) {
-    List<HistoryItem> results = command.execute(repository);
-    return Page.of(results, pageable, results.size());
+    return command.execute(repository, pageable);
   }
 }

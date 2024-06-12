@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.github.opendonationassistant.Amount;
 import io.github.opendonationassistant.Attachment;
 import io.github.opendonationassistant.HistoryItem;
-import io.github.opendonationassistant.HistoryItemData;
 import io.github.opendonationassistant.HistoryItemRepository;
 import io.github.opendonationassistant.ReelResult;
 import io.github.opendonationassistant.TargetGoal;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -31,9 +32,11 @@ public class GetHistoryCommandTest {
 
     var command = new GetHistoryCommand();
     command.setRecipientId("recipientId");
-    List<HistoryItem> results = command.execute(repository);
 
-    var expected = List.of(testdata);
+    Pageable pageable = Pageable.from(0,10);
+    Page<HistoryItem> results = command.execute(repository, pageable);
+
+    var expected = Page.of(List.of(testdata), pageable, 1);
     assertEquals(expected, results);
   }
 
