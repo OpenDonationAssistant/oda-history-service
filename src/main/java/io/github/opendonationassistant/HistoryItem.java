@@ -9,6 +9,7 @@ import io.micronaut.serde.annotation.Serdeable;
 @Serdeable
 @MappedEntity("history")
 public class HistoryItem extends HistoryItemData {
+
   public void save(HistoryItemRepository repository) {
     Optional<HistoryItem> existing = repository.findById(getId());
     existing.ifPresentOrElse(
