@@ -6,10 +6,13 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller("/history")
 public class HistoryController {
+
+  private Logger log = LoggerFactory.getLogger(HistoryController.class);
 
   private final HistoryItemRepository repository;
 
@@ -23,6 +26,7 @@ public class HistoryController {
     Pageable pageable,
     @Body GetHistoryCommand command
   ) {
+    log.debug("command: {}, pageable: {}", command, pageable);
     return command.execute(repository, pageable);
   }
 }

@@ -19,10 +19,15 @@ public class CommandListener {
   public void listen(HistoryCommand command) {
     switch (command.getType()) {
       case "update":
-        Optional
-          .ofNullable(command.getPartial())
+        Optional<HistoryItem> data = Optional.ofNullable(command.getPartial());
+        data
           .map(HistoryItem::getId)
           .flatMap(repository::findById)
+          .or(() ->
+            data
+              .map(HistoryItem::getPaymentId)
+              .flatMap(repository::findByPaymentId)
+          )
           .map(item -> item.merge(command.getPartial()))
           .ifPresentOrElse(
             updated -> updated.save(repository),
