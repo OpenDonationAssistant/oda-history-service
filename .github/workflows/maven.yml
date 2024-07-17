@@ -21,6 +21,9 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - uses: s4u/maven-settings-action@v3.0.0
+      with:
+        servers: '[{"id": "github", "username": "${{ secrets.MAVEN_USER }}", "password": "${{ secrets.MAVEN_TOKEN }}"}]'
+        repositories: '[{"id":"github","name":"github","url":"https://maven.pkg.github.com/opendonationassistant/oda-libraries","snapshots":{"enabled":true}}]'
 
     - uses: actions/setup-node@v3
       with:
