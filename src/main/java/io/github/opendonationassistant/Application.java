@@ -3,16 +3,13 @@ package io.github.opendonationassistant;
 import io.micronaut.context.ApplicationContextBuilder;
 import io.micronaut.context.ApplicationContextConfigurer;
 import io.micronaut.context.annotation.ContextConfigurer;
+import io.micronaut.rabbitmq.connect.ChannelInitializer;
 import io.micronaut.runtime.Micronaut;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.info.*;
+import jakarta.inject.Singleton;
 
-@OpenAPIDefinition(
-    info = @Info(
-            title = "oda-history-service",
-            version = "0.1"
-    )
-)
+@OpenAPIDefinition(info = @Info(title = "oda-history-service", version = "0.2"))
 public class Application {
 
   @ContextConfigurer
@@ -25,7 +22,13 @@ public class Application {
     }
   }
 
-    public static void main(String[] args) {
-        Micronaut.run(Application.class, args);
-    }
+  public static void main(String[] args) {
+    Micronaut.run(Application.class, args);
+  }
+
+  @Singleton
+  public ChannelInitializer rabbitConfiguration(){
+    return new RabbitConfiguration();
+  }
+
 }

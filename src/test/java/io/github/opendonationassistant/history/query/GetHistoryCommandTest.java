@@ -2,12 +2,12 @@ package io.github.opendonationassistant.history.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.opendonationassistant.Amount;
 import io.github.opendonationassistant.Attachment;
 import io.github.opendonationassistant.HistoryItem;
 import io.github.opendonationassistant.HistoryItemRepository;
 import io.github.opendonationassistant.ReelResult;
 import io.github.opendonationassistant.TargetGoal;
+import io.github.opendonationassistant.commons.Amount;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;

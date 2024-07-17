@@ -1,5 +1,7 @@
 package io.github.opendonationassistant;
 
+import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
@@ -8,7 +10,6 @@ import io.micronaut.serde.annotation.Serdeable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Serdeable
 @MappedEntity("history")
@@ -27,6 +28,25 @@ public class HistoryItemData {
   private List<Attachment> attachments = new ArrayList<>();
   private List<TargetGoal> goals = new ArrayList<>();
   private List<ReelResult> reelResults = new ArrayList<>();
+
+  public CompletedPaymentNotification makeNotification() {
+    CompletedPaymentNotification notification =
+      new CompletedPaymentNotification();
+    goals
+      .stream()
+      .findFirst()
+      .map(TargetGoal::getGoalId)
+      .ifPresent(notification::setGoal);
+    notification.setAmount(amount);
+    notification.setFailed(false);
+    notification.setMessage(message);
+    notification.setNickname(nickname);
+    notification.setRecipientId(recipientId);
+    notification.setAttachments(
+      attachments.stream().map(Attachment::getId).toList()
+    );
+    return notification;
+  }
 
   public String getId() {
     return id;

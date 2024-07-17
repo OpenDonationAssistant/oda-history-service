@@ -15,7 +15,7 @@ public class CommandListener {
     this.repository = repository;
   }
 
-  @Queue(RabbitConfiguration.COMMANDS_QUEUE_NAME)
+  @Queue(RabbitConfiguration.HISTORY_COMMANDS_QUEUE_NAME)
   public void listen(HistoryCommand command) {
     switch (command.getType()) {
       case "update":

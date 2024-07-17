@@ -1,6 +1,6 @@
 {
   "npmName": "@opendonationassistant/oda-history-service-client",
-  "npmVersion": "0.1.0",
+  "npmVersion": "0.2.0",
   "npmRepository" : "https://npm.pkg.github.com",
   "snapshot" : false,
   "supportsES6": true

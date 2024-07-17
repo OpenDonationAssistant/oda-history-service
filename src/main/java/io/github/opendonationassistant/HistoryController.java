@@ -1,5 +1,8 @@
 package io.github.opendonationassistant;
 
+import io.github.opendonationassistant.events.PaymentNotificationSender;
+import io.github.opendonationassistant.events.PaymentSender;
+import io.github.opendonationassistant.history.command.AddHistoryItemCommand;
 import io.github.opendonationassistant.history.query.GetHistoryCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -15,9 +18,22 @@ public class HistoryController {
   private Logger log = LoggerFactory.getLogger(HistoryController.class);
 
   private final HistoryItemRepository repository;
+  private final PaymentNotificationSender paymentSender;
+  private final PaymentSender alertSender;
 
-  public HistoryController(HistoryItemRepository repository) {
+  public HistoryController(HistoryItemRepository repository, PaymentNotificationSender paymentSender, PaymentSender alertSender) {
     this.repository = repository;
+    this.paymentSender = paymentSender;
+    this.alertSender = alertSender;
+  }
+
+  @Post("add")
+  @Secured(SecurityRule.IS_ANONYMOUS)
+  public void addHistoryItem(
+    @Body AddHistoryItemCommand command
+  ) {
+    log.debug("command: {}", command);
+    command.execute(repository, paymentSender, alertSender);
   }
 
   @Post("get")

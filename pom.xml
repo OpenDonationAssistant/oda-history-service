@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.opendonationassistant</groupId>
   <artifactId>oda-history-service</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
   <packaging>${packaging}</packaging>
   <parent>
     <groupId>io.micronaut.platform</groupId>
@@ -28,6 +28,16 @@
     </repository>
   </repositories>
   <dependencies>
+    <dependency>
+      <groupId>io.github.opendonationassistant</groupId>
+      <artifactId>oda-rabbit-conf</artifactId>
+      <version>0.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.uuid</groupId>
+      <artifactId>java-uuid-generator</artifactId>
+      <version>5.0.0</version>
+    </dependency>
     <dependency>
       <groupId>io.micronaut</groupId>
       <artifactId>micronaut-http-server-netty</artifactId>
@@ -266,7 +276,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/target/classes/META-INF/swagger/oda-history-service-0.1.yml</inputSpec>
+              <inputSpec>${project.basedir}/target/classes/META-INF/swagger/oda-history-service-0.2.yml</inputSpec>
               <generatorName>typescript-axios</generatorName>
               <configurationFile>openapi-config.json</configurationFile>
               <configOptions>

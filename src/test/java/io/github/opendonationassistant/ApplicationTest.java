@@ -3,6 +3,7 @@ package io.github.opendonationassistant;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.github.opendonationassistant.commons.Amount;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
