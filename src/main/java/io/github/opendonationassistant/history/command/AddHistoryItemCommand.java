@@ -54,4 +54,37 @@ public class AddHistoryItemCommand extends HistoryItemData {
       alertSender.send("%salerts".formatted(getRecipientId()), notification);
     }
   }
+
+  public Boolean getTriggerAlert() {
+    return triggerAlert;
+  }
+
+  public void setTriggerAlert(Boolean triggerAlert) {
+    this.triggerAlert = triggerAlert;
+  }
+
+  public Boolean getTriggerReel() {
+    return triggerReel;
+  }
+
+  public void setTriggerReel(Boolean triggerReel) {
+    this.triggerReel = triggerReel;
+  }
+
+  public Boolean getAddToGoal() {
+    return addToGoal;
+  }
+
+  public void setAddToGoal(Boolean addToGoal) {
+    this.addToGoal = addToGoal;
+  }
+
+  public Boolean getAddToTop() {
+    return addToTop;
+  }
+
+  public void setAddToTop(Boolean addToTop) {
+    this.addToTop = addToTop;
+  }
+
 }
