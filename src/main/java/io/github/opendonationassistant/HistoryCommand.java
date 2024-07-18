@@ -1,5 +1,6 @@
 package io.github.opendonationassistant;
 
+import io.micronaut.serde.ObjectMapper;
 import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
@@ -22,5 +23,14 @@ public class HistoryCommand {
 
   public void setPartial(HistoryItem partial) {
     this.partial = partial;
+  }
+
+  @Override
+  public String toString() {
+    try {
+      return ObjectMapper.getDefault().writeValueAsString(this);
+    } catch (Exception e) {
+      return "Can't serialize as json";
+    }
   }
 }

@@ -7,23 +7,29 @@ import io.github.opendonationassistant.HistoryItemRepository;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.PaymentNotificationSender;
 import io.github.opendonationassistant.events.PaymentSender;
+import io.micronaut.serde.ObjectMapper;
 import io.micronaut.serde.annotation.Serdeable;
 import java.time.Instant;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Serdeable
 public class AddHistoryItemCommand extends HistoryItemData {
 
-  private Boolean triggerAlert;
-  private Boolean triggerReel;
-  private Boolean addToGoal;
-  private Boolean addToTop;
+  private Logger log = LoggerFactory.getLogger(AddHistoryItemCommand.class);
+
+  private boolean triggerAlert = false;
+  private boolean triggerReel = false;
+  private boolean addToGoal = false;
+  private boolean addToTop = false;
 
   public void execute(
     HistoryItemRepository repository,
     PaymentNotificationSender paymentSender,
     PaymentSender alertSender
   ) {
+    log.info("Executing:  {}", this);
     HistoryItem created = new HistoryItem();
     created.setId(Generators.timeBasedEpochGenerator().generate().toString());
     created.setAmount(getAmount());
@@ -44,13 +50,13 @@ public class AddHistoryItemCommand extends HistoryItemData {
     if (triggerReel) {
       paymentSender.sendToReel(notification);
     }
-    if (addToGoal) {
+    if (getGoals() != null && getGoals().size() > 0) {
       paymentSender.sendToGoals(notification);
     }
     if (addToTop) {
       paymentSender.sendToContributions(notification);
     }
-    if (triggerAlert){
+    if (triggerAlert) {
       alertSender.send("%salerts".formatted(getRecipientId()), notification);
     }
   }
@@ -87,4 +93,12 @@ public class AddHistoryItemCommand extends HistoryItemData {
     this.addToTop = addToTop;
   }
 
+  @Override
+  public String toString() {
+    try {
+      return ObjectMapper.getDefault().writeValueAsString(this);
+    } catch (Exception e) {
+      return "Can't serialize as  json";
+    }
+  }
 }

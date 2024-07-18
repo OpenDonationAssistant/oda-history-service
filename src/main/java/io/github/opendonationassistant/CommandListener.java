@@ -5,10 +5,14 @@ import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RabbitListener
 public class CommandListener {
 
   private final HistoryItemRepository repository;
+  private Logger log = LoggerFactory.getLogger(CommandListener.class);
 
   @Inject
   public CommandListener(HistoryItemRepository repository) {
@@ -17,6 +21,7 @@ public class CommandListener {
 
   @Queue(RabbitConfiguration.HISTORY_COMMANDS_QUEUE_NAME)
   public void listen(HistoryCommand command) {
+    log.info("Executing HistoryCommand: {}", command);
     switch (command.getType()) {
       case "update":
         Optional<HistoryItem> data = Optional.ofNullable(command.getPartial());
