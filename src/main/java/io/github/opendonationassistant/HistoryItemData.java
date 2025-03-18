@@ -45,6 +45,7 @@ public class HistoryItemData {
     notification.setAttachments(
       attachments.stream().map(Attachment::getId).toList()
     );
+    notification.setAuthorizationTimestamp(authorizationTimestamp);
     notification.setId(paymentId);
     return notification;
   }
