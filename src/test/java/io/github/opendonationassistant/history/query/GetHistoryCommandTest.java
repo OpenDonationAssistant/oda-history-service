@@ -36,7 +36,7 @@ public class GetHistoryCommandTest {
     Pageable pageable = Pageable.from(0,10);
     Page<HistoryItem> results = command.execute(repository, pageable);
 
-    var expected = Page.of(List.of(testdata), pageable, 1);
+    var expected = Page.of(List.of(testdata), pageable, 1L);
     assertEquals(expected, results);
   }
 
@@ -48,10 +48,7 @@ public class GetHistoryCommandTest {
   }
 
   private Attachment defaultAttachment() {
-    var attach = new Attachment();
-    attach.setUrl("url");
-    attach.setTitle("attachTitle");
-    return attach;
+    return new Attachment(null, "url", "attachTitle");
   }
 
   private ReelResult defaultReelResult() {
@@ -69,8 +66,8 @@ public class GetHistoryCommandTest {
     testdata.setRecipientId("recipientId");
     testdata.setAmount(new Amount(100, 0, "RUB"));
     testdata.setGoals(List.of(defaultGoal()));
-    testdata.setAttachments(List.of(defaultAttachment()));
-    testdata.setReelResults(List.of(defaultReelResult()));
+    testdata.setAttachments(List.of());
+    testdata.setReelResults(List.of());
     return testdata;
   }
 

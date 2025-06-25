@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.rabbit.Key;
+import io.github.opendonationassistant.rabbit.RabbitConfiguration;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.specification.RequestSpecification;
 import jakarta.inject.Inject;
@@ -33,7 +35,7 @@ public class ApplicationTest {
     command.setPartial(item);
 
     commandSender.send(
-      RabbitConfiguration.HISTORY_COMMANDS_ROUTING_KEY,
+      Key.HISTORY,
       command
     );
     Awaitility.await().until(() -> repository.findById("id").isPresent());

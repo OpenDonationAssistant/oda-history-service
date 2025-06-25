@@ -39,7 +39,7 @@ public class HistoryItemData {
       message,
       recipientId,
       amount,
-      attachments.stream().map(Attachment::getId).toList(),
+      attachments.stream().map(Attachment::id).toList(),
       goals.stream().findFirst().map(TargetGoal::getGoalId).orElse(""),
       authorizationTimestamp
     );
