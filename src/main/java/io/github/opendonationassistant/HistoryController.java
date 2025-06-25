@@ -7,6 +7,8 @@ import io.github.opendonationassistant.history.query.GetHistoryCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.annotation.*;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ public class HistoryController {
 
   @Post("add")
   @Secured(SecurityRule.IS_ANONYMOUS)
+  @ExecuteOn(TaskExecutors.BLOCKING)
   public void addHistoryItem(@Body AddHistoryItemCommand command) {
     log.debug("command: {}", command);
     command.execute(repository, paymentSender, alertSender);
