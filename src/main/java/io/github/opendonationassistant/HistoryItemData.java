@@ -2,6 +2,7 @@ package io.github.opendonationassistant;
 
 import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
+import io.github.opendonationassistant.events.history.Attachment;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
@@ -30,24 +31,18 @@ public class HistoryItemData {
   private List<ReelResult> reelResults = new ArrayList<>();
 
   public CompletedPaymentNotification makeNotification() {
-    CompletedPaymentNotification notification =
-      new CompletedPaymentNotification();
-    goals
-      .stream()
-      .findFirst()
-      .map(TargetGoal::getGoalId)
-      .ifPresent(notification::setGoal);
-    notification.setAmount(amount);
-    notification.setFailed(false);
-    notification.setMessage(message);
-    notification.setNickname(nickname);
-    notification.setRecipientId(recipientId);
-    notification.setAttachments(
-      attachments.stream().map(Attachment::getId).toList()
+    return new CompletedPaymentNotification(
+      paymentId,
+      nickname,
+      nickname,
+      message,
+      message,
+      recipientId,
+      amount,
+      attachments.stream().map(Attachment::getId).toList(),
+      goals.stream().findFirst().map(TargetGoal::getGoalId).orElse(""),
+      authorizationTimestamp
     );
-    notification.setAuthorizationTimestamp(authorizationTimestamp);
-    notification.setId(paymentId);
-    return notification;
   }
 
   public String getId() {

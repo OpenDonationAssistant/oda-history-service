@@ -1,27 +1,26 @@
 package io.github.opendonationassistant;
 
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
+import java.util.Map;
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RabbitListener
 public class CommandListener {
 
+  private final ODALogger log = new ODALogger(this);
   private final HistoryItemRepository repository;
-  private Logger log = LoggerFactory.getLogger(CommandListener.class);
 
   @Inject
   public CommandListener(HistoryItemRepository repository) {
     this.repository = repository;
   }
 
-  @Queue(RabbitConfiguration.HISTORY_COMMANDS_QUEUE_NAME)
+  @Queue(io.github.opendonationassistant.rabbit.Queue.Commands.HISTORY)
   public void listen(HistoryCommand command) {
-    log.info("Executing HistoryCommand: {}", command);
+    log.info("Executing HistoryCommand", Map.of("command", command));
     switch (command.getType()) {
       case "update":
         Optional<HistoryItem> data = Optional.ofNullable(command.getPartial());
@@ -37,9 +36,9 @@ public class CommandListener {
           .ifPresentOrElse(
             updated -> updated.save(repository),
             () ->
-              Optional
-                .ofNullable(command.getPartial())
-                .ifPresent(partial -> partial.save(repository))
+              Optional.ofNullable(command.getPartial()).ifPresent(partial ->
+                partial.save(repository)
+              )
           );
         break;
       default:

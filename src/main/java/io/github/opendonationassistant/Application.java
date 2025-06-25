@@ -1,5 +1,6 @@
 package io.github.opendonationassistant;
 
+import io.github.opendonationassistant.rabbit.RabbitConfiguration;
 import io.micronaut.context.ApplicationContextBuilder;
 import io.micronaut.context.ApplicationContextConfigurer;
 import io.micronaut.context.annotation.ContextConfigurer;
@@ -27,8 +28,7 @@ public class Application {
   }
 
   @Singleton
-  public ChannelInitializer rabbitConfiguration(){
+  public ChannelInitializer rabbitConfiguration() {
     return new RabbitConfiguration();
   }
-
 }

@@ -4,20 +4,20 @@ import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.HistoryItem;
 import io.github.opendonationassistant.HistoryItemData;
 import io.github.opendonationassistant.HistoryItemRepository;
+import io.github.opendonationassistant.commons.ToString;
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.PaymentNotificationSender;
-import io.github.opendonationassistant.events.PaymentSender;
-import io.micronaut.serde.ObjectMapper;
+import io.github.opendonationassistant.events.alerts.AlertSender;
 import io.micronaut.serde.annotation.Serdeable;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Serdeable
 public class AddHistoryItemCommand extends HistoryItemData {
 
-  private Logger log = LoggerFactory.getLogger(AddHistoryItemCommand.class);
+  private final ODALogger log = new ODALogger(this);
 
   private boolean triggerAlert = false;
   private boolean triggerReel = false;
@@ -27,9 +27,10 @@ public class AddHistoryItemCommand extends HistoryItemData {
   public void execute(
     HistoryItemRepository repository,
     PaymentNotificationSender paymentSender,
-    PaymentSender alertSender
+    AlertSender alertSender
   ) {
-    log.info("Executing:  {}", this);
+    log.info("Executing AddHistoryItemCommand", Map.of("command", this));
+
     HistoryItem created = new HistoryItem();
     created.setId(Generators.timeBasedEpochGenerator().generate().toString());
     created.setAmount(getAmount());
@@ -41,9 +42,9 @@ public class AddHistoryItemCommand extends HistoryItemData {
     created.setAttachments(getAttachments());
     created.setReelResults(getReelResults());
     created.setAuthorizationTimestamp(
-      Optional
-        .ofNullable(getAuthorizationTimestamp())
-        .orElseGet(() -> Instant.now())
+      Optional.ofNullable(getAuthorizationTimestamp()).orElseGet(() ->
+        Instant.now()
+      )
     );
     repository.save(created);
     CompletedPaymentNotification notification = created.makeNotification();
@@ -57,7 +58,10 @@ public class AddHistoryItemCommand extends HistoryItemData {
       paymentSender.sendToContributions(notification);
     }
     if (triggerAlert) {
-      alertSender.send("%salerts".formatted(getRecipientId()), notification);
+      alertSender.send(
+        "%salerts".formatted(getRecipientId()),
+        notification.asAlertNotification()
+      );
     }
   }
 
@@ -95,10 +99,6 @@ public class AddHistoryItemCommand extends HistoryItemData {
 
   @Override
   public String toString() {
-    try {
-      return ObjectMapper.getDefault().writeValueAsString(this);
-    } catch (Exception e) {
-      return "Can't serialize as  json";
-    }
+    return ToString.asJson(this);
   }
 }
