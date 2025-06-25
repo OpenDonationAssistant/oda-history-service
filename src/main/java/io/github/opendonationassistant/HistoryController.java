@@ -1,7 +1,7 @@
 package io.github.opendonationassistant;
 
 import io.github.opendonationassistant.events.PaymentNotificationSender;
-import io.github.opendonationassistant.events.PaymentSender;
+import io.github.opendonationassistant.events.alerts.AlertSender;
 import io.github.opendonationassistant.history.command.AddHistoryItemCommand;
 import io.github.opendonationassistant.history.query.GetHistoryCommand;
 import io.micronaut.data.model.Page;
@@ -19,12 +19,12 @@ public class HistoryController {
 
   private final HistoryItemRepository repository;
   private final PaymentNotificationSender paymentSender;
-  private final PaymentSender alertSender;
+  private final AlertSender alertSender;
 
   public HistoryController(
     HistoryItemRepository repository,
     PaymentNotificationSender paymentSender,
-    PaymentSender alertSender
+    AlertSender alertSender
   ) {
     this.repository = repository;
     this.paymentSender = paymentSender;
