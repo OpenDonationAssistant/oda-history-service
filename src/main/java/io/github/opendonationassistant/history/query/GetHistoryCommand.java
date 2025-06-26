@@ -20,7 +20,7 @@ public class GetHistoryCommand {
     HistoryItemRepository repository,
     Pageable pageable
   ) {
-    return repository.findByRecipientIdOrderByAuthorizationTimestampDesc(
+    return repository.findByRecipientIdOrderByAuthorizationTimestampAsc(
       recipientId,
       pageable
     );
