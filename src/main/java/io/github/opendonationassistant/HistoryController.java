@@ -6,6 +6,8 @@ import io.github.opendonationassistant.history.command.AddHistoryItemCommand;
 import io.github.opendonationassistant.history.query.GetHistoryCommand;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
+import io.micronaut.data.model.Sort.Order;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
@@ -48,6 +50,6 @@ public class HistoryController {
     @Body GetHistoryCommand command
   ) {
     log.debug("command: {}, pageable: {}", command, pageable);
-    return command.execute(repository, pageable);
+    return command.execute(repository, pageable.withSort(Sort.of(Order.desc("authorization_timestamp")))); // TODO: fix it
   }
 }
