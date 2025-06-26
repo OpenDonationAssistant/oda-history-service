@@ -50,6 +50,9 @@ public class HistoryController {
     @Body GetHistoryCommand command
   ) {
     log.debug("command: {}, pageable: {}", command, pageable);
-    return command.execute(repository, pageable.withSort(Sort.of(Order.desc("authorization_timestamp")))); // TODO: fix it
+    return command.execute(
+      repository,
+      pageable.withSort(Sort.of(Order.desc("authorization_timestamp")))
+    ); // TODO: fix it
   }
 }

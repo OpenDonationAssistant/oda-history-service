@@ -10,7 +10,7 @@ import java.util.Optional;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface HistoryItemRepository
   extends CrudRepository<HistoryItem, String> {
-  public Page<HistoryItem> findByRecipientIdOrderByAuthorizationTimestampAsc(
+  public Page<HistoryItem> findByRecipientId(
     String recipientId,
     Pageable pageable
   );
