@@ -54,7 +54,7 @@ public class HistoryController {
     try {
       return command.execute(
         repository,
-        pageable.withSort(Sort.of(Order.desc("authorization_timestamp")))
+        pageable.withSort(Sort.of(Order.desc("authorizationTimestamp")))
       ); // TODO: fix it
     } catch (Exception e) {
       e.printStackTrace();
