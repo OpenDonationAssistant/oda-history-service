@@ -45,6 +45,7 @@ public class HistoryController {
 
   @Post("get")
   @Secured(SecurityRule.IS_ANONYMOUS)
+  @ExecuteOn(TaskExecutors.BLOCKING)
   public Page<HistoryItem> getHistory(
     Pageable pageable,
     @Body GetHistoryCommand command
