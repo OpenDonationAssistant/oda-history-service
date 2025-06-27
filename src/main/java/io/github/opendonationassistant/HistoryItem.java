@@ -12,6 +12,7 @@ import java.util.Optional;
 public class HistoryItem extends HistoryItemData {
 
   public void save(HistoryItemRepository repository) {
+    // TODO: почему вдруг стало проблемой, откуда прилетает без id
     if (StringUtils.isEmpty(getId())) {
       setId(Generators.timeBasedEpochGenerator().generate().toString());
     }
