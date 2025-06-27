@@ -59,3 +59,11 @@ jobs:
   update-deployment-configuration:
     uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/update_version.yml'
     secrets: inherit
+    with:
+      service: history-service
+
+  deploy:
+    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/deploy.yml'
+    secrets: inherit
+    with:
+      service: history-service
