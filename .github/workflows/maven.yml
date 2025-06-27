@@ -57,14 +57,14 @@ jobs:
         tags: ghcr.io/opendonationassistant/oda-history-service:${{ github.RUN_NUMBER }}
 
   update-deployment-configuration:
-    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/update_version.yml'
+    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/update_version.yml@main'
     secrets: inherit
     with:
       service: history-service
       version: '{{ github.RUN_NUMBER }}'
 
   deploy:
-    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/deploy.yml'
+    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/deploy.yml@main'
     secrets: inherit
     with:
       service: history-service
