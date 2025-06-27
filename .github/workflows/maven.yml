@@ -61,9 +61,11 @@ jobs:
     secrets: inherit
     with:
       service: history-service
+      version: '{{ github.RUN_NUMBER }}'
 
   deploy:
     uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/deploy.yml'
     secrets: inherit
     with:
       service: history-service
+      version: '{{ github.RUN_NUMBER }}'
