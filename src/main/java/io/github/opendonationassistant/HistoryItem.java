@@ -1,16 +1,20 @@
 package io.github.opendonationassistant;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
+import com.fasterxml.uuid.Generators;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.serde.annotation.Serdeable;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Serdeable
 @MappedEntity("history")
 public class HistoryItem extends HistoryItemData {
 
   public void save(HistoryItemRepository repository) {
+    if (StringUtils.isEmpty(getId())) {
+      setId(Generators.timeBasedEpochGenerator().generate().toString());
+    }
     Optional<HistoryItem> existing = repository.findById(getId());
     existing.ifPresentOrElse(
       old -> {
@@ -21,12 +25,12 @@ public class HistoryItem extends HistoryItemData {
   }
 
   public HistoryItem merge(HistoryItemData data) {
-    if (data == null){
+    if (data == null) {
       return this;
     }
     var updated = new HistoryItem();
     updated.setId(getId());
-    if (data.getId() != null){
+    if (data.getId() != null) {
       updated.setId(data.getId());
     }
     updated.setAmount(getAmount());
@@ -38,7 +42,7 @@ public class HistoryItem extends HistoryItemData {
       updated.setMessage(data.getMessage());
     }
     updated.setNickname(getNickname());
-    if (data.getNickname() != null)  {
+    if (data.getNickname() != null) {
       updated.setNickname(data.getNickname());
     }
     updated.setPaymentId(getPaymentId());
@@ -74,5 +78,4 @@ public class HistoryItem extends HistoryItemData {
 
     return updated;
   }
-
 }
