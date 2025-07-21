@@ -36,9 +36,10 @@ public class CommandListener {
           .ifPresentOrElse(
             updated -> updated.save(repository),
             () ->
-              Optional.ofNullable(command.getPartial()).ifPresent(partial ->
-                partial.save(repository)
-              )
+              Optional.ofNullable(command.getPartial()).ifPresent(partial -> {
+                partial.setSystem("ODA");
+                partial.save(repository);
+              })
           );
         break;
       default:

@@ -25,6 +25,8 @@ public class HistoryItemData {
   private Amount amount;
   private String message;
   private Instant authorizationTimestamp;
+  private String system;
+  private String externalId;
 
   private List<Attachment> attachments = new ArrayList<>();
   private List<TargetGoal> goals = new ArrayList<>();
@@ -218,5 +220,21 @@ public class HistoryItemData {
       if (other.reelResults != null) return false;
     } else if (!reelResults.equals(other.reelResults)) return false;
     return true;
+  }
+
+  public String getExternalId() {
+    return externalId;
+  }
+
+  public void setExternalId(String externalId) {
+    this.externalId = externalId;
+  }
+
+  public String getSystem() {
+    return system;
+  }
+
+  public void setSystem(String system) {
+    this.system = system;
   }
 }

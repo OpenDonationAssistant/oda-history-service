@@ -41,6 +41,8 @@ public class AddHistoryItemCommand extends HistoryItemData {
     created.setRecipientId(getRecipientId());
     created.setAttachments(getAttachments());
     created.setReelResults(getReelResults());
+    created.setSystem(Optional.ofNullable(getSystem()).orElse("ODA"));
+    created.setExternalId(getExternalId());
     created.setAuthorizationTimestamp(
       Optional.ofNullable(getAuthorizationTimestamp()).orElseGet(() ->
         Instant.now()
