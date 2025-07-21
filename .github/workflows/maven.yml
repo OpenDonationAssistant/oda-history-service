@@ -13,4 +13,3 @@ jobs:
     with:
       service: history-service
       version: "${{ github.RUN_NUMBER }}"
-      npm: false
