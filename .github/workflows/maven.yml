@@ -2,72 +2,15 @@ name: Release
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
 
 permissions: write-all
 
 jobs:
-  build-and-push:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - uses: graalvm/setup-graalvm@v1
-      with:
-        java-version: '21'
-        distribution: 'graalvm'
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - uses: s4u/maven-settings-action@v3.0.0
-      with:
-        servers: '[{"id": "github", "username": "${{ secrets.MAVEN_USER }}", "password": "${{ secrets.MAVEN_TOKEN }}"}]'
-        repositories: '[{"id":"github","name":"github","url":"https://maven.pkg.github.com/opendonationassistant/oda-libraries","snapshots":{"enabled":true}}]'
-
-    - uses: actions/setup-node@v3
-      with:
-        node-version: "20"
-
-    - name: Build with Maven
-      run: mvn -B package -DskipTests
-
-    - name: Install npm package
-      run: npm install
-      working-directory: "target/generated-sources/openapi/"
-
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - uses: JS-DevTools/npm-publish@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        registry: "https://npm.pkg.github.com"
-        package: "target/generated-sources/openapi/"
-
-    - name: Build and push
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ghcr.io/opendonationassistant/oda-history-service:${{ github.RUN_NUMBER }}
-
-  update-deployment-configuration:
-    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/update_version.yml@main'
-    needs: build-and-push
+  build-and-deploy:
+    uses: "OpenDonationAssistant/oda-libraries/.github/workflows/release_service.yml@master"
     secrets: inherit
     with:
       service: history-service
-      version: '${{ github.RUN_NUMBER }}'
-
-  deploy:
-    uses: 'OpenDonationAssistant/oda-k3s-specs/.github/workflows/deploy.yml@main'
-    needs: update-deployment-configuration
-    secrets: inherit
-    with:
-      service: history-service
-      version: '${{ github.RUN_NUMBER }}'
+      version: "${{ github.RUN_NUMBER }}"
+      npm: false
