@@ -47,13 +47,7 @@ public class PaymentListener {
       payment.message(),
       payment.cleanMessage(),
       payment.authorizationTimestamp(),
-      Optional.ofNullable(payment.attachments())
-        .orElse(List.of())
-        .stream()
-        .map(attachmentId -> {
-          return new Attachment(null, attachmentId, null, null);
-        })
-        .toList(),
+      List.of(),
       Optional.ofNullable(payment.goal())
         .flatMap(goalRepository::findById)
         .map(goal -> List.of(new TargetGoal(goal.id(), goal.title())))
