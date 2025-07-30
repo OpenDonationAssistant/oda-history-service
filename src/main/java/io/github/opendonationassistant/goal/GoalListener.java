@@ -22,10 +22,20 @@ public class GoalListener {
       .ifPresentOrElse(
         existing ->
           repository.update(
-            new GoalData(goal.goalId(), goal.briefDescription())
+            new GoalData(
+              goal.goalId(),
+              goal.briefDescription(),
+              goal.isDefault()
+            )
           ),
         () ->
-          repository.save(new GoalData(goal.goalId(), goal.briefDescription()))
+          repository.save(
+            new GoalData(
+              goal.goalId(),
+              goal.briefDescription(),
+              goal.isDefault()
+            )
+          )
       );
   }
 }
