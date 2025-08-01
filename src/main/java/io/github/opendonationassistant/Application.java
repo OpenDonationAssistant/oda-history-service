@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.info.*;
 import jakarta.inject.Singleton;
 
-@OpenAPIDefinition(info = @Info(title = "oda-history-service", version = "0.3"))
+@OpenAPIDefinition(info = @Info(title = "oda-history-service"))
 public class Application {
 
   @ContextConfigurer
