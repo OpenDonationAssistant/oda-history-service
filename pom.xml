@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.opendonationassistant</groupId>
   <artifactId>oda-history-service</artifactId>
-  <version>0.3</version>
+  <version>0.4</version>
   <packaging>${packaging}</packaging>
   <parent>
     <groupId>io.micronaut.platform</groupId>
@@ -272,7 +272,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/target/classes/META-INF/swagger/oda-history-service-0.3.yml</inputSpec>
+              <inputSpec>${project.basedir}/target/classes/META-INF/swagger/oda-history-service-${version}.yml</inputSpec>
               <generatorName>typescript-axios</generatorName>
               <configurationFile>openapi-config.json</configurationFile>
               <configOptions>
