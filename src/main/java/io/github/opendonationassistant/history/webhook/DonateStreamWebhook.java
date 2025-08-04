@@ -28,10 +28,11 @@ public class DonateStreamWebhook {
     this.repository = repository;
   }
 
-  @Post("/notification/donate.stream/{recipientId}")
+  @Post("/notification/donate.stream/{recipientId}/{token}")
   @Secured(SecurityRule.IS_ANONYMOUS)
   public HttpResponse<String> addHistoryItem(
     @PathVariable("recipientId") String recipientId,
+    @PathVariable("token") String token,
     @Body DonateStreamWebhookBody body
   ) {
     handleDonation(recipientId, body);
