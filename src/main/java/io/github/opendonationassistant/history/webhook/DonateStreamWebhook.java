@@ -4,6 +4,7 @@ import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.HistoryItem;
 import io.github.opendonationassistant.HistoryItemRepository;
 import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
@@ -16,12 +17,14 @@ import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 public class DonateStreamWebhook {
 
   private final HistoryItemRepository repository;
+  private ODALogger log = new ODALogger(this);
 
   @Inject
   public DonateStreamWebhook(HistoryItemRepository repository) {
@@ -35,6 +38,10 @@ public class DonateStreamWebhook {
     @PathVariable("token") String token,
     @Body DonateStreamWebhookBody body
   ) {
+    log.info("donate.stream webhook", Map.of("payload", body));
+    if ("confirm".equals(body.type())) {
+      return HttpResponse.ok(body.uid());
+    }
     handleDonation(recipientId, body);
     return HttpResponse.ok("OK");
   }
