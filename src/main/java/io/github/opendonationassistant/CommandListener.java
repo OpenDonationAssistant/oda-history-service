@@ -7,6 +7,8 @@ import io.github.opendonationassistant.events.alerts.AlertSender;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ public class CommandListener {
   }
 
   @Queue(io.github.opendonationassistant.rabbit.Queue.Commands.HISTORY)
+  @Transactional
   public void listen(HistoryCommand command) {
     log.info("Executing HistoryCommand", Map.of("command", command));
     switch (command.type()) {
