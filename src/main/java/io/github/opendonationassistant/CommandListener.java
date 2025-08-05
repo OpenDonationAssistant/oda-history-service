@@ -57,6 +57,7 @@ public class CommandListener {
         CompletedPaymentNotification notification = command
           .partial()
           .makeNotification();
+        new HistoryItem().merge(command.partial()).save(repository);
         if (command.triggerReel()) {
           paymentSender.sendToReel(notification);
         }
