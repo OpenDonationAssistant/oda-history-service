@@ -2,6 +2,7 @@ package io.github.opendonationassistant;
 
 import io.github.opendonationassistant.events.PaymentNotificationSender;
 import io.github.opendonationassistant.events.alerts.AlertSender;
+import io.github.opendonationassistant.events.history.HistoryCommandSender;
 import io.github.opendonationassistant.history.command.AddHistoryItemCommand;
 import io.github.opendonationassistant.history.query.GetHistoryCommand;
 import io.micronaut.data.model.Page;
@@ -24,15 +25,18 @@ public class HistoryController {
   private final HistoryItemRepository repository;
   private final PaymentNotificationSender paymentSender;
   private final AlertSender alertSender;
+  private final HistoryCommandSender sender;
 
   public HistoryController(
     HistoryItemRepository repository,
     PaymentNotificationSender paymentSender,
-    AlertSender alertSender
+    AlertSender alertSender,
+    HistoryCommandSender commandSender
   ) {
     this.repository = repository;
     this.paymentSender = paymentSender;
     this.alertSender = alertSender;
+    this.sender = commandSender;
   }
 
   @Post("add")
@@ -40,7 +44,7 @@ public class HistoryController {
   @ExecuteOn(TaskExecutors.BLOCKING)
   public void addHistoryItem(@Body AddHistoryItemCommand command) {
     log.debug("command: {}", command);
-    command.execute(repository, paymentSender, alertSender);
+    command.execute(sender);
   }
 
   @Post("get")

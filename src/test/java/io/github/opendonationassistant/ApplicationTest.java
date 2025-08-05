@@ -30,9 +30,7 @@ public class ApplicationTest {
     item.setPaymentId("paymentId");
     item.setNickname("nickname");
 
-    var command = new HistoryCommand();
-    command.setType("update");
-    command.setPartial(item);
+    var command = new HistoryCommand("update",item, false, false, false, false);
 
     commandSender.send(
       Key.HISTORY,

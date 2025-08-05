@@ -29,7 +29,6 @@ public class AddHistoryItemCommand extends HistoryItemData {
   private boolean addToTop = false;
 
   public void execute(
-    HistoryItemRepository repository,
     HistoryCommandSender commandSender
   ) {
     log.info("Executing AddHistoryItemCommand", Map.of("command", this));

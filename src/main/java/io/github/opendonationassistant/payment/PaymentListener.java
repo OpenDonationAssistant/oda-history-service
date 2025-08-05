@@ -46,6 +46,7 @@ public class PaymentListener {
       payment.message(),
       payment.cleanMessage(),
       "ODA",
+      null,
       payment.authorizationTimestamp(),
       List.of(),
       Optional.ofNullable(payment.goal())
