@@ -3,7 +3,6 @@ package io.github.opendonationassistant.payment;
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
-import io.github.opendonationassistant.events.history.Attachment;
 import io.github.opendonationassistant.events.history.HistoryCommand;
 import io.github.opendonationassistant.events.history.HistoryCommandSender;
 import io.github.opendonationassistant.events.history.HistoryItemData;
@@ -46,6 +45,7 @@ public class PaymentListener {
       payment.amount(),
       payment.message(),
       payment.cleanMessage(),
+      "ODA",
       payment.authorizationTimestamp(),
       List.of(),
       Optional.ofNullable(payment.goal())
@@ -55,6 +55,6 @@ public class PaymentListener {
       null
     );
 
-    commandSender.send("history", new HistoryCommand("update", partial));
+    commandSender.send("history", new HistoryCommand("update", partial, false, false, false, false));
   }
 }

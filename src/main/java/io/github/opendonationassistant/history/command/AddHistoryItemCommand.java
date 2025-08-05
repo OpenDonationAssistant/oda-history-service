@@ -9,6 +9,10 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.PaymentNotificationSender;
 import io.github.opendonationassistant.events.alerts.AlertSender;
+import io.github.opendonationassistant.events.history.HistoryCommand;
+import io.github.opendonationassistant.events.history.HistoryCommandSender;
+import io.github.opendonationassistant.events.history.ReelResult;
+import io.github.opendonationassistant.events.history.TargetGoal;
 import io.micronaut.serde.annotation.Serdeable;
 import java.time.Instant;
 import java.util.Map;
@@ -26,45 +30,45 @@ public class AddHistoryItemCommand extends HistoryItemData {
 
   public void execute(
     HistoryItemRepository repository,
-    PaymentNotificationSender paymentSender,
-    AlertSender alertSender
+    HistoryCommandSender commandSender
   ) {
     log.info("Executing AddHistoryItemCommand", Map.of("command", this));
 
-    HistoryItem created = new HistoryItem();
-    created.setId(Generators.timeBasedEpochGenerator().generate().toString());
-    created.setAmount(getAmount());
-    created.setMessage(getMessage());
-    created.setNickname(getNickname());
-    created.setPaymentId(getPaymentId());
-    created.setGoals(getGoals());
-    created.setRecipientId(getRecipientId());
-    created.setAttachments(getAttachments());
-    created.setReelResults(getReelResults());
-    created.setSystem(Optional.ofNullable(getSystem()).orElse("ODA"));
-    created.setExternalId(getExternalId());
-    created.setAuthorizationTimestamp(
-      Optional.ofNullable(getAuthorizationTimestamp()).orElseGet(() ->
-        Instant.now()
+    var created =
+      new io.github.opendonationassistant.events.history.HistoryItemData(
+        Generators.timeBasedEpochGenerator().generate().toString(),
+        getPaymentId(),
+        getNickname(),
+        getNickname(),
+        getRecipientId(),
+        getAmount(),
+        getMessage(),
+        getMessage(),
+        Optional.ofNullable(getSystem()).orElse("ODA"),
+        getExternalId(),
+        Optional.ofNullable(getAuthorizationTimestamp()).orElseGet(() ->
+          Instant.now()
+        ),
+        getAttachments(),
+        getGoals()
+          .stream()
+          .map(it -> new TargetGoal(it.getGoalId(), it.getGoalTitle()))
+          .toList(),
+        getReelResults()
+          .stream()
+          .map(it -> new ReelResult(it.getTitle()))
+          .toList()
+      );
+    commandSender.send(
+      new HistoryCommand(
+        "create",
+        created,
+        triggerAlert,
+        triggerReel,
+        addToTop,
+        addToGoal
       )
     );
-    repository.save(created);
-    CompletedPaymentNotification notification = created.makeNotification();
-    if (triggerReel) {
-      paymentSender.sendToReel(notification);
-    }
-    if (getGoals() != null && getGoals().size() > 0) {
-      paymentSender.sendToGoals(notification);
-    }
-    if (addToTop) {
-      paymentSender.sendToContributions(notification);
-    }
-    if (triggerAlert) {
-      alertSender.send(
-        "%salerts".formatted(getRecipientId()),
-        notification.asAlertNotification()
-      );
-    }
   }
 
   public Boolean getTriggerAlert() {
