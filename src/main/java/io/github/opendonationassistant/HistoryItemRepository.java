@@ -23,4 +23,5 @@ public interface HistoryItemRepository
   );
 
   public Optional<HistoryItem> findByPaymentId(String paymentId);
+  public Optional<HistoryItem> findByExternalId(String externalId);
 }

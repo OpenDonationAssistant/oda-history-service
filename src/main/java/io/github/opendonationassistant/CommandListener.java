@@ -54,6 +54,14 @@ public class CommandListener {
           );
         break;
       case "create":
+        var existing = repository.findById(command.partial().getId());
+        if (existing.isPresent()){
+          return;
+        }
+        existing = repository.findByExternalId(command.partial().getExternalId());
+        if (existing.isPresent()){
+          return;
+        }
         CompletedPaymentNotification notification = command
           .partial()
           .makeNotification();
@@ -77,6 +85,7 @@ public class CommandListener {
             notification.asAlertNotification()
           );
         }
+        break;
       default:
         break;
     }
