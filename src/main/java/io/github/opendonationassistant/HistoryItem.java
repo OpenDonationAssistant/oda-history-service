@@ -76,6 +76,7 @@ public class HistoryItem extends HistoryItemData {
       updatedReelResults.addAll(data.getReelResults());
     }
     updated.setReelResults(updatedReelResults);
+    updated.setSystem(getSystem());
     if (StringUtils.isNotEmpty(data.getSystem())) {
       updated.setSystem(data.getSystem());
     }
