@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.opendonationassistant</groupId>
   <artifactId>oda-history-service</artifactId>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
   <packaging>${packaging}</packaging>
   <parent>
     <groupId>io.micronaut.platform</groupId>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
       <artifactId>oda-rabbit-conf</artifactId>
-      <version>0.7.67</version>
+      <version>0.7.69</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.uuid</groupId>
@@ -277,6 +277,7 @@
               <configurationFile>openapi-config.json</configurationFile>
               <configOptions>
                 <output>${project.build.directory}/</output>
+                <npmVersion>${project.version}</npmVersion>
               </configOptions>
             </configuration>
           </execution>

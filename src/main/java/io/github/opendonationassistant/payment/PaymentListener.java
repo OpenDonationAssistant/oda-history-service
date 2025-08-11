@@ -56,6 +56,6 @@ public class PaymentListener {
       null
     );
 
-    commandSender.send("history", new HistoryCommand("update", partial, false, false, false, false));
+    commandSender.send("history", new HistoryCommand("update", partial, false, false, false, false, false));
   }
 }

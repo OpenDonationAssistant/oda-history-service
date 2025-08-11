@@ -8,6 +8,7 @@ public record HistoryCommand(
   HistoryItemData partial,
   boolean triggerAlert,
   boolean triggerReel,
+  boolean triggerDonaton,
   boolean addToTop,
   boolean addToGoal
 ) {}

@@ -25,12 +25,11 @@ public class AddHistoryItemCommand extends HistoryItemData {
 
   private boolean triggerAlert = false;
   private boolean triggerReel = false;
+  private boolean triggerDonaton = false;
   private boolean addToGoal = false;
   private boolean addToTop = false;
 
-  public void execute(
-    HistoryCommandSender commandSender
-  ) {
+  public void execute(HistoryCommandSender commandSender) {
     log.info("Executing AddHistoryItemCommand", Map.of("command", this));
 
     var created =
@@ -64,6 +63,7 @@ public class AddHistoryItemCommand extends HistoryItemData {
         created,
         triggerAlert,
         triggerReel,
+        triggerDonaton,
         addToTop,
         addToGoal
       )
@@ -100,6 +100,10 @@ public class AddHistoryItemCommand extends HistoryItemData {
 
   public void setAddToTop(Boolean addToTop) {
     this.addToTop = addToTop;
+  }
+
+  public void setTriggerDonaton(Boolean triggerDonaton) {
+    this.triggerDonaton = triggerDonaton;
   }
 
   @Override

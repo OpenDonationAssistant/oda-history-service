@@ -69,9 +69,6 @@ public class CommandListener {
           .partial()
           .makeNotification();
         new HistoryItem().merge(command.partial()).save(repository);
-        if (command.triggerReel()) {
-          paymentSender.sendToReel(notification);
-        }
         if (
           command.addToGoal() &&
           command.partial().getGoals() != null &&
@@ -81,6 +78,12 @@ public class CommandListener {
         }
         if (command.addToTop()) {
           paymentSender.sendToContributions(notification);
+        }
+        if (command.triggerReel()) {
+          paymentSender.sendToReel(notification);
+        }
+        if (command.triggerDonaton()) {
+          paymentSender.sendToDonaton(notification);
         }
         if (command.triggerAlert()) {
           alertSender.send(

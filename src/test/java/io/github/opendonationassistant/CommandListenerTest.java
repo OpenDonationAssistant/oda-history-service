@@ -31,7 +31,15 @@ public class CommandListenerTest {
     var commandData = minimalHistoryItem();
 
     listener.listen(
-      new HistoryCommand("update", commandData, false, false, false, false)
+      new HistoryCommand(
+        "update",
+        commandData,
+        false,
+        false,
+        false,
+        false,
+        false
+      )
     );
 
     verify(old).merge(commandData);
