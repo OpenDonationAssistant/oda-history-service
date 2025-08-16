@@ -4,11 +4,11 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.PaymentNotificationSender;
 import io.github.opendonationassistant.events.alerts.AlertSender;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,13 +57,22 @@ public class CommandListener {
           );
         break;
       case "create":
-        var existing = repository.findById(command.partial().getId());
-        if (existing.isPresent()){
+        if (command.partial() == null) {
           return;
         }
-        existing = repository.findByExternalId(command.partial().getExternalId());
-        if (existing.isPresent()){
-          return;
+        if (StringUtils.isNotEmpty(command.partial().getId())) {
+          var existing = repository.findById(command.partial().getId());
+          if (existing.isPresent()) {
+            return;
+          }
+        }
+        if (StringUtils.isNotEmpty(command.partial().getExternalId())) {
+          var existing = repository.findByExternalId(
+            command.partial().getExternalId()
+          );
+          if (existing.isPresent()) {
+            return;
+          }
         }
         CompletedPaymentNotification notification = command
           .partial()
