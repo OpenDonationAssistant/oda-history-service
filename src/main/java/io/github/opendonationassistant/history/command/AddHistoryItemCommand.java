@@ -65,7 +65,7 @@ public class AddHistoryItemCommand extends HistoryItemData {
         triggerReel,
         triggerDonaton,
         addToTop,
-        addToGoal
+        created.goals().size() > 0
       )
     );
   }
