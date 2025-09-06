@@ -25,7 +25,9 @@ micronaut:
     jwks:
       expire-after-write: 240h
 endpoints:
-  flyway:
+  all:
+    sensitive: false
+  caches:
     enabled: true
 flyway:
   datasources:
