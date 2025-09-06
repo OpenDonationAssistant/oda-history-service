@@ -24,11 +24,17 @@ micronaut:
   caches:
     jwks:
       expire-after-write: 240h
+  control-panel:
+    enabled: true
+    allowed-environments:
+      - standalone
 endpoints:
   all:
     sensitive: false
   caches:
     enabled: true
+  loggers:
+    write-sensitive: false
 flyway:
   datasources:
     default:
