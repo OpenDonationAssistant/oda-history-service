@@ -21,9 +21,9 @@ micronaut:
           jwks:
             keycloak:
               url: https://auth.oda.digital/realms/ODA/protocol/openid-connect/certs
-  # caches:
-  #   jwks:
-  #     expire-after-write: 240h
+  caches:
+    jwks:
+      expire-after-write: 240h
 endpoints:
   flyway:
     enabled: true
