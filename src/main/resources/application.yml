@@ -30,6 +30,7 @@ micronaut:
       - standalone
 endpoints:
   all:
+    enabled: true
     sensitive: false
   caches:
     enabled: true
