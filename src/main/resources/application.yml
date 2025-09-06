@@ -22,7 +22,7 @@ micronaut:
             keycloak:
               url: https://auth.oda.digital/realms/ODA/protocol/openid-connect/certs
     intercept-url-map:
-      - pattern: /oda-history-service/control-panel/**
+      - pattern: /control-panel/**
         access:
           - isAnonymous()
   caches:
@@ -30,7 +30,6 @@ micronaut:
       expire-after-write: 240h
   control-panel:
     enabled: true
-    path: /oda-history-service/control-panel
     allowed-environments:
       - k8s
       - cloud
