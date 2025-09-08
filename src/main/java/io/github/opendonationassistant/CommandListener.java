@@ -31,7 +31,10 @@ public class CommandListener {
     this.alertSender = alertSender;
   }
 
-  @Queue(io.github.opendonationassistant.rabbit.Queue.Commands.HISTORY)
+  @Queue(
+    value = io.github.opendonationassistant.rabbit.Queue.Commands.HISTORY,
+    executor = "history-command-listener"
+  )
   @Transactional
   public void listen(HistoryCommand command) {
     log.info("Executing HistoryCommand", Map.of("command", command));

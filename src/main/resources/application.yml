@@ -35,6 +35,10 @@ micronaut:
       - cloud
       - standalone
       - allinone
+  executors:
+    history-command-listener:
+      type: fixed
+      nThreads: 1
 endpoints:
   all:
     enabled: true
