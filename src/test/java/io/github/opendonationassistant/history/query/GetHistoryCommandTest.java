@@ -76,14 +76,6 @@ public class GetHistoryCommandTest {
     return new TargetGoal("goalId", "goalTitle");
   }
 
-  private Attachment defaultAttachment() {
-    return new Attachment(null, "url", "attachTitle");
-  }
-
-  private ReelResult defaultReelResult() {
-    return new ReelResult("reelTitle");
-  }
-
   private HistoryItem defaultHistoryItemData() {
     var testdata = new HistoryItem();
     testdata.setId("id");

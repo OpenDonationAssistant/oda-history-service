@@ -120,6 +120,7 @@ public class CommandListener {
         }
         break;
       default:
+        log.info("Unknown HistoryCommand", Map.of("command", command));
         break;
     }
   }
