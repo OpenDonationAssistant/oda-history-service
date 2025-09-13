@@ -1,19 +1,25 @@
 package io.github.opendonationassistant;
 
 import com.fasterxml.uuid.Generators;
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.serde.annotation.Serdeable;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 
 @Serdeable
 @MappedEntity("history")
 public class HistoryItem extends HistoryItemData {
 
+  private final ODALogger log = new ODALogger(this);
+
   public void save(HistoryItemRepository repository) {
     // TODO: почему вдруг стало проблемой, откуда прилетает без id
     if (StringUtils.isEmpty(getId())) {
+      // TODO потом убрать
+      log.info("HistoryItem without id", Map.of("item", this));
       setId(Generators.timeBasedEpochGenerator().generate().toString());
     }
     Optional<HistoryItem> existing = repository.findById(getId());

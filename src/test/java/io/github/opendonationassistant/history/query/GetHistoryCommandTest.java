@@ -73,10 +73,7 @@ public class GetHistoryCommandTest {
   }
 
   private TargetGoal defaultGoal() {
-    var goal = new TargetGoal();
-    goal.setGoalId("goalId");
-    goal.setGoalTitle("goalTitle");
-    return goal;
+    return new TargetGoal("goalId", "goalTitle");
   }
 
   private Attachment defaultAttachment() {
@@ -84,9 +81,7 @@ public class GetHistoryCommandTest {
   }
 
   private ReelResult defaultReelResult() {
-    var reelResult = new ReelResult();
-    reelResult.setTitle("reelTitle");
-    return reelResult;
+    return new ReelResult("reelTitle");
   }
 
   private HistoryItem defaultHistoryItemData() {

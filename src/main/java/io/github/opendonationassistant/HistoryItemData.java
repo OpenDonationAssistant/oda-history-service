@@ -9,7 +9,6 @@ import io.micronaut.data.annotation.MappedProperty;
 import io.micronaut.data.model.DataType;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.annotation.Nullable;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,9 @@ public class HistoryItemData {
   private String message;
   private Instant authorizationTimestamp;
   private String system;
-  @Nullable private String externalId;
+
+  @Nullable
+  private String externalId;
 
   private List<Attachment> attachments = new ArrayList<>();
   private List<TargetGoal> goals = new ArrayList<>();
@@ -44,7 +45,7 @@ public class HistoryItemData {
       recipientId,
       amount,
       attachments.stream().map(Attachment::id).toList(),
-      goals.stream().findFirst().map(TargetGoal::getGoalId).orElse(""),
+      goals.stream().findFirst().map(TargetGoal::goalId).orElse(""),
       authorizationTimestamp
     );
   }

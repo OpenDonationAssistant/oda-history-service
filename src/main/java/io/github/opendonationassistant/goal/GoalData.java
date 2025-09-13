@@ -7,4 +7,8 @@ import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
 @MappedEntity("goal")
-public record GoalData(@Id String id, @Nullable String title, Boolean isDefault) {}
+public record GoalData(
+  @Id String id,
+  @Nullable String title,
+  Boolean isDefault
+) {}

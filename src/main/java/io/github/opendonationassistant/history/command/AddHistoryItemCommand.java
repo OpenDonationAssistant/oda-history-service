@@ -1,27 +1,17 @@
 package io.github.opendonationassistant.history.command;
 
 import com.fasterxml.uuid.Generators;
-import io.github.opendonationassistant.HistoryItem;
 import io.github.opendonationassistant.HistoryItemData;
-import io.github.opendonationassistant.HistoryItemRepository;
-import io.github.opendonationassistant.commons.ToString;
-import io.github.opendonationassistant.commons.logging.ODALogger;
-import io.github.opendonationassistant.events.CompletedPaymentNotification;
-import io.github.opendonationassistant.events.PaymentNotificationSender;
-import io.github.opendonationassistant.events.alerts.AlertSender;
 import io.github.opendonationassistant.events.history.HistoryCommand;
 import io.github.opendonationassistant.events.history.HistoryCommandSender;
 import io.github.opendonationassistant.events.history.ReelResult;
 import io.github.opendonationassistant.events.history.TargetGoal;
 import io.micronaut.serde.annotation.Serdeable;
 import java.time.Instant;
-import java.util.Map;
 import java.util.Optional;
 
 @Serdeable
 public class AddHistoryItemCommand extends HistoryItemData {
-
-  private final ODALogger log = new ODALogger(this);
 
   private boolean triggerAlert = false;
   private boolean triggerReel = false;
@@ -30,8 +20,6 @@ public class AddHistoryItemCommand extends HistoryItemData {
   private boolean addToTop = false;
 
   public void execute(HistoryCommandSender commandSender) {
-    log.info("Executing AddHistoryItemCommand", Map.of("command", this));
-
     var created =
       new io.github.opendonationassistant.events.history.HistoryItemData(
         Generators.timeBasedEpochGenerator().generate().toString(),
@@ -50,11 +38,11 @@ public class AddHistoryItemCommand extends HistoryItemData {
         getAttachments(),
         getGoals()
           .stream()
-          .map(it -> new TargetGoal(it.getGoalId(), it.getGoalTitle()))
+          .map(it -> new TargetGoal(it.goalId(), it.goalTitle()))
           .toList(),
         getReelResults()
           .stream()
-          .map(it -> new ReelResult(it.getTitle()))
+          .map(it -> new ReelResult(it.title()))
           .toList()
       );
     commandSender.send(
@@ -104,10 +92,5 @@ public class AddHistoryItemCommand extends HistoryItemData {
 
   public void setTriggerDonaton(Boolean triggerDonaton) {
     this.triggerDonaton = triggerDonaton;
-  }
-
-  @Override
-  public String toString() {
-    return ToString.asJson(this);
   }
 }

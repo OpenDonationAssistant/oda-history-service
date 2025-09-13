@@ -49,23 +49,37 @@ public class CommandListener {
               .map(HistoryItemData::getPaymentId)
               .flatMap(repository::findByPaymentId)
           )
-          .map(item -> item.merge(command.partial()))
+          .map(item -> {
+            log.debug(
+              "Updating history item",
+              Map.of("item", item, "update", command.partial())
+            );
+            return item.merge(command.partial());
+          })
           .ifPresentOrElse(
             updated -> updated.save(repository),
-            () ->
+            () -> {
+              // TODO должно быть только обновление, без создания
+              log.debug(
+                "Saving new history item",
+                Map.of("item", command.partial())
+              );
               Optional.ofNullable(command.partial()).ifPresent(partial -> {
                 partial.setSystem("ODA");
                 new HistoryItem().merge(partial).save(repository);
-              })
+              });
+            }
           );
         break;
       case "create":
         if (command.partial() == null) {
+          log.debug("Creation command without partial", Map.of("command", command));
           return;
         }
         if (StringUtils.isNotEmpty(command.partial().getId())) {
           var existing = repository.findById(command.partial().getId());
           if (existing.isPresent()) {
+            log.debug("History item with same id already exists", Map.of("command", command));
             return;
           }
         }
@@ -73,6 +87,7 @@ public class CommandListener {
           var existing = repository.findByExternalId(
             command.partial().getExternalId()
           );
+          log.debug("History item with same externalId already exists", Map.of("command", command));
           if (existing.isPresent()) {
             return;
           }
