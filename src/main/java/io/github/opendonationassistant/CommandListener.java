@@ -4,6 +4,9 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.PaymentNotificationSender;
 import io.github.opendonationassistant.events.alerts.AlertSender;
+import io.github.opendonationassistant.events.goal.GoalFacade;
+import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
+import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInSpecifiedGoalCommand;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
@@ -19,16 +22,19 @@ public class CommandListener {
   private final HistoryItemRepository repository;
   private final PaymentNotificationSender paymentSender;
   private final AlertSender alertSender;
+  private final GoalFacade goalFacade;
 
   @Inject
   public CommandListener(
     HistoryItemRepository repository,
     PaymentNotificationSender paymentSender,
-    AlertSender alertSender
+    AlertSender alertSender,
+    GoalFacade goalFacade
   ) {
     this.repository = repository;
     this.paymentSender = paymentSender;
     this.alertSender = alertSender;
+    this.goalFacade = goalFacade;
   }
 
   @Queue(
@@ -73,13 +79,19 @@ public class CommandListener {
         break;
       case "create":
         if (command.partial() == null) {
-          log.debug("Creation command without partial", Map.of("command", command));
+          log.debug(
+            "Creation command without partial",
+            Map.of("command", command)
+          );
           return;
         }
         if (StringUtils.isNotEmpty(command.partial().getId())) {
           var existing = repository.findById(command.partial().getId());
           if (existing.isPresent()) {
-            log.debug("History item with same id already exists", Map.of("command", command));
+            log.debug(
+              "History item with same id already exists",
+              Map.of("command", command)
+            );
             return;
           }
         }
@@ -87,7 +99,10 @@ public class CommandListener {
           var existing = repository.findByExternalId(
             command.partial().getExternalId()
           );
-          log.debug("History item with same externalId already exists", Map.of("command", command));
+          log.debug(
+            "History item with same externalId already exists",
+            Map.of("command", command)
+          );
           if (existing.isPresent()) {
             return;
           }
@@ -96,11 +111,28 @@ public class CommandListener {
           .partial()
           .makeNotification();
         new HistoryItem().merge(command.partial()).save(repository);
-        if (
-          command.addToGoal() &&
-          command.partial().getGoals() != null &&
-          command.partial().getGoals().size() > 0
-        ) {
+        if (command.addToGoal() && command.partial().getAmount() != null) {
+          if (
+            command.partial().getGoals() != null &&
+            command.partial().getGoals().size() > 0
+          ) {
+            goalFacade.run(
+              new CountPaymentInSpecifiedGoalCommand(
+                notification.id(),
+                notification.recipientId(),
+                command.partial().getGoals().get(0).goalId(),
+                command.partial().getAmount()
+              )
+            );
+          } else {
+            goalFacade.run(
+              new CountPaymentInDefaultGoalCommand(
+                notification.id(),
+                notification.recipientId(),
+                command.partial().getAmount()
+              )
+            );
+          }
           paymentSender.sendToGoals(notification);
         }
         if (command.addToTop()) {
