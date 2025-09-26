@@ -40,10 +40,7 @@ public class AddHistoryItemCommand extends HistoryItemData {
           .stream()
           .map(it -> new TargetGoal(it.goalId(), it.goalTitle()))
           .toList(),
-        getReelResults()
-          .stream()
-          .map(it -> new ReelResult(it.title()))
-          .toList()
+        getReelResults().stream().map(it -> new ReelResult(it.title())).toList()
       );
     commandSender.send(
       new HistoryCommand(
@@ -53,7 +50,7 @@ public class AddHistoryItemCommand extends HistoryItemData {
         triggerReel,
         triggerDonaton,
         addToTop,
-        created.goals().size() > 0
+        created.goals().size() > 0 || addToGoal
       )
     );
   }
