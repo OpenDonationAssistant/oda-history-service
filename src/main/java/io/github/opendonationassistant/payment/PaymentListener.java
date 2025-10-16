@@ -53,9 +53,12 @@ public class PaymentListener {
         .flatMap(goalRepository::findById)
         .map(goal -> List.of(new TargetGoal(goal.id(), goal.title())))
         .orElse(null),
-      null
+      null,
+      payment.actions().stream()
+        .map(it -> new HistoryItemData.ActionRequest(it.id(), it.actionId(), it.payload()))
+        .toList()
     );
 
-    commandSender.send("history", new HistoryCommand("update", partial, false, false, false, false, false));
+    commandSender.send("history", new HistoryCommand("create", partial, false, false, false, false, false));
   }
 }

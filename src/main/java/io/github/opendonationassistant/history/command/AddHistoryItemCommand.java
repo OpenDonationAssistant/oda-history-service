@@ -8,6 +8,7 @@ import io.github.opendonationassistant.events.history.ReelResult;
 import io.github.opendonationassistant.events.history.TargetGoal;
 import io.micronaut.serde.annotation.Serdeable;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Serdeable
@@ -40,7 +41,8 @@ public class AddHistoryItemCommand extends HistoryItemData {
           .stream()
           .map(it -> new TargetGoal(it.goalId(), it.goalTitle()))
           .toList(),
-        getReelResults().stream().map(it -> new ReelResult(it.title())).toList()
+        getReelResults().stream().map(it -> new ReelResult(it.title())).toList(),
+        List.of()
       );
     commandSender.send(
       new HistoryCommand(

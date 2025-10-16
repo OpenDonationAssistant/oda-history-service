@@ -66,14 +66,10 @@ public class CommandListener {
             updated -> updated.save(repository),
             () -> {
               // TODO должно быть только обновление, без создания
-              log.debug(
-                "Saving new history item",
+              log.error(
+                "History item not found",
                 Map.of("item", command.partial())
               );
-              Optional.ofNullable(command.partial()).ifPresent(partial -> {
-                partial.setSystem("ODA");
-                new HistoryItem().merge(partial).save(repository);
-              });
             }
           );
         break;
@@ -149,6 +145,9 @@ public class CommandListener {
             "%salerts".formatted(command.partial().getRecipientId()),
             notification.asAlertNotification()
           );
+        }
+        if (command.partial().getActions().size() > 0) {
+          paymentSender.sendToActions(notification);
         }
         break;
       default:

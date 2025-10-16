@@ -3,6 +3,7 @@ package io.github.opendonationassistant;
 import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.history.Attachment;
+import io.github.opendonationassistant.events.payments.PaymentFacade;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
@@ -12,6 +13,7 @@ import jakarta.annotation.Nullable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Serdeable
 @MappedEntity("history")
@@ -34,6 +36,7 @@ public class HistoryItemData {
   private List<Attachment> attachments = new ArrayList<>();
   private List<TargetGoal> goals = new ArrayList<>();
   private List<ReelResult> reelResults = new ArrayList<>();
+  private List<ActionRequest> actions = new ArrayList<>();
 
   public CompletedPaymentNotification makeNotification() {
     return new CompletedPaymentNotification(
@@ -46,7 +49,18 @@ public class HistoryItemData {
       amount,
       attachments.stream().map(Attachment::id).toList(),
       goals.stream().findFirst().map(TargetGoal::goalId).orElse(""),
-      authorizationTimestamp
+      authorizationTimestamp,
+      system,
+      actions
+        .stream()
+        .map(request ->
+          new PaymentFacade.ActionRequest(
+            request.id,
+            request.actionId,
+            request.payload
+          )
+        )
+        .toList()
     );
   }
 
@@ -240,4 +254,20 @@ public class HistoryItemData {
   public void setSystem(String system) {
     this.system = system;
   }
+
+  @MappedProperty(type = DataType.JSON)
+  public List<ActionRequest> getActions() {
+    return actions;
+  }
+
+  public void setActions(List<ActionRequest> actions) {
+    this.actions = actions;
+  }
+
+  @Serdeable
+  public static record ActionRequest(
+    String id,
+    String actionId,
+    Map<String, Object> payload
+  ) {}
 }
