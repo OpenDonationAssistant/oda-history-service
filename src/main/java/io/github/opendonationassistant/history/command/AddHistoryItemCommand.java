@@ -41,8 +41,19 @@ public class AddHistoryItemCommand extends HistoryItemData {
           .stream()
           .map(it -> new TargetGoal(it.goalId(), it.goalTitle()))
           .toList(),
-        getReelResults().stream().map(it -> new ReelResult(it.title())).toList(),
-        List.of()
+        getReelResults()
+          .stream()
+          .map(it -> new ReelResult(it.title()))
+          .toList(),
+        List.of(),
+        Optional.ofNullable(getAlertMedia())
+          .map(it -> it.url())
+          .map(url ->
+            new io.github.opendonationassistant.events.history.HistoryItemData.AlertMedia(
+              url
+            )
+          )
+          .orElse(null)
       );
     commandSender.send(
       new HistoryCommand(

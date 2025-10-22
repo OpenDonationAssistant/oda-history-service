@@ -38,6 +38,9 @@ public class HistoryItemData {
   private List<ReelResult> reelResults = new ArrayList<>();
   private List<ActionRequest> actions = new ArrayList<>();
 
+  @Nullable
+  private AlertMedia alertMedia;
+
   public CompletedPaymentNotification makeNotification() {
     return new CompletedPaymentNotification(
       paymentId,
@@ -264,10 +267,23 @@ public class HistoryItemData {
     this.actions = actions;
   }
 
+  @MappedProperty(type = DataType.JSON)
+  @Nullable
+  public AlertMedia getAlertMedia() {
+    return alertMedia;
+  }
+
+  public void setAlertMedia(@Nullable AlertMedia alertMedia) {
+    this.alertMedia = alertMedia;
+  }
+
   @Serdeable
   public static record ActionRequest(
     String id,
     String actionId,
     Map<String, Object> payload
   ) {}
+
+  @Serdeable
+  public static record AlertMedia(String url) {}
 }

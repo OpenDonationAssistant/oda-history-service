@@ -3,6 +3,7 @@ package io.github.opendonationassistant;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.PaymentNotificationSender;
+import io.github.opendonationassistant.events.alerts.AlertNotification;
 import io.github.opendonationassistant.events.alerts.AlertSender;
 import io.github.opendonationassistant.events.goal.GoalFacade;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
@@ -141,9 +142,14 @@ public class CommandListener {
           paymentSender.sendToDonaton(notification);
         }
         if (command.triggerAlert()) {
+          final AlertNotification alert = notification.asAlertNotification();
           alertSender.send(
             "%salerts".formatted(command.partial().getRecipientId()),
-            notification.asAlertNotification()
+            Optional.ofNullable(command.partial().getAlertMedia())
+              .map(it -> it.url())
+              .map(url -> alert.withMedia(new AlertNotification.AlertMedia(url))
+              )
+              .orElse(alert)
           );
         }
         if (command.partial().getActions().size() > 0) {

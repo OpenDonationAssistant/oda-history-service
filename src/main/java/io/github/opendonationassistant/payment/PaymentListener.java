@@ -56,7 +56,8 @@ public class PaymentListener {
       null,
       payment.actions().stream()
         .map(it -> new HistoryItemData.ActionRequest(it.id(), it.actionId(), it.payload()))
-        .toList()
+        .toList(),
+      null
     );
 
     commandSender.send("history", new HistoryCommand("create", partial, false, false, false, false, false));
