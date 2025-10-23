@@ -64,6 +64,14 @@ public class HistoryItem extends HistoryItemData {
     if (data.getAuthorizationTimestamp() != null) {
       updated.setAuthorizationTimestamp(data.getAuthorizationTimestamp());
     }
+    updated.setExternalId(getExternalId());
+    if (data.getExternalId() != null) {
+      updated.setExternalId(data.getExternalId());
+    }
+    updated.setAlertMedia(getAlertMedia());
+    if (data.getAlertMedia() != null) {
+      updated.setAlertMedia(data.getAlertMedia());
+    }
 
     var updatedGoals = new ArrayList<>(getGoals());
     if (data.getGoals() != null) {
