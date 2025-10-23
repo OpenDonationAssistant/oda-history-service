@@ -96,11 +96,11 @@ public class CommandListener {
           var existing = repository.findByExternalId(
             command.partial().getExternalId()
           );
-          log.debug(
-            "History item with same externalId already exists",
-            Map.of("command", command)
-          );
           if (existing.isPresent()) {
+            log.debug(
+              "History item with same externalId already exists",
+              Map.of("command", command)
+            );
             return;
           }
         }
