@@ -60,6 +60,7 @@ public class HistoryItemData {
           new PaymentFacade.ActionRequest(
             request.id,
             request.actionId,
+            request.amount(),
             request.payload
           )
         )
@@ -281,6 +282,7 @@ public class HistoryItemData {
   public static record ActionRequest(
     String id,
     String actionId,
+    Integer amount,
     Map<String, Object> payload
   ) {}
 

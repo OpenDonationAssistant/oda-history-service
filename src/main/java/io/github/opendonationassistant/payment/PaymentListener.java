@@ -54,12 +54,24 @@ public class PaymentListener {
         .map(goal -> List.of(new TargetGoal(goal.id(), goal.title())))
         .orElse(null),
       null,
-      payment.actions().stream()
-        .map(it -> new HistoryItemData.ActionRequest(it.id(), it.actionId(), it.payload()))
+      payment
+        .actions()
+        .stream()
+        .map(it ->
+          new HistoryItemData.ActionRequest(
+            it.id(),
+            it.actionId(),
+            it.amount(),
+            it.payload()
+          )
+        )
         .toList(),
       null
     );
 
-    commandSender.send("history", new HistoryCommand("create", partial, false, false, false, false, false));
+    commandSender.send(
+      "history",
+      new HistoryCommand("create", partial, false, false, false, false, false)
+    );
   }
 }
