@@ -94,6 +94,10 @@ public class HistoryItem extends HistoryItemData {
     if (StringUtils.isNotEmpty(data.getSystem())) {
       updated.setSystem(data.getSystem());
     }
+    var updatedActions = new ArrayList<>(getActions());
+    if (data.getActions() != null) {
+      updatedActions.addAll(data.getActions());
+    }
 
     return updated;
   }

@@ -1,6 +1,8 @@
 package io.github.opendonationassistant.payment;
 
 import com.fasterxml.uuid.Generators;
+
+import io.github.opendonationassistant.action.ActionDataRepository;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.CompletedPaymentNotification;
 import io.github.opendonationassistant.events.history.HistoryCommand;
@@ -22,14 +24,17 @@ public class PaymentListener {
 
   private final HistoryCommandSender commandSender;
   private final GoalDataRepository goalRepository;
+  private final ActionDataRepository actionRepository;
 
   @Inject
   public PaymentListener(
     HistoryCommandSender commandSender,
-    GoalDataRepository goalRepository
+    GoalDataRepository goalRepository,
+    ActionDataRepository actionRepository
   ) {
     this.commandSender = commandSender;
     this.goalRepository = goalRepository;
+    this.actionRepository = actionRepository;
   }
 
   @Queue(io.github.opendonationassistant.rabbit.Queue.Payments.HISTORY)
@@ -61,6 +66,7 @@ public class PaymentListener {
           new HistoryItemData.ActionRequest(
             it.id(),
             it.actionId(),
+            actionRepository.findById(it.actionId()).get().name(),
             it.amount(),
             it.payload()
           )
