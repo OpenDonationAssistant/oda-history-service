@@ -98,6 +98,7 @@ public class HistoryItem extends HistoryItemData {
     if (data.getActions() != null) {
       updatedActions.addAll(data.getActions());
     }
+    updated.setActions(updatedActions);
 
     return updated;
   }
