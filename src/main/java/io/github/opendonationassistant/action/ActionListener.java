@@ -4,7 +4,9 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.actions.ActionSender;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
+import io.micronaut.rabbitmq.bind.RabbitAcknowledgement;
 import jakarta.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 @RabbitListener
@@ -20,8 +22,22 @@ public class ActionListener {
   }
 
   @Queue(io.github.opendonationassistant.rabbit.Queue.History.ACTIONS)
-  public void listen(ActionSender.Action action) {
-    log.info("Saving action", Map.of("id", action.id(), "name", action.name()));
-    repository.save(new ActionData(action.id(), action.name()));
+  public void listen(
+    List<ActionSender.Action> actions,
+    RabbitAcknowledgement ack
+  ) {
+    try {
+      actions.forEach(action -> {
+        log.info(
+          "Saving action",
+          Map.of("id", action.id(), "name", action.name())
+        );
+        repository.save(new ActionData(action.id(), action.name()));
+      });
+      ack.ack();
+    } catch (Exception e) {
+      log.error("Failed to save actions", Map.of("error", e.getMessage()));
+      ack.nack();
+    }
   }
 }
