@@ -130,7 +130,6 @@ public class CommandListener {
               )
             );
           }
-          paymentSender.sendToGoals(notification);
         }
         if (command.addToTop()) {
           paymentSender.sendToContributions(notification);
