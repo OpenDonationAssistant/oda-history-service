@@ -64,7 +64,8 @@ public class HistoryItemData {
             request.payload
           )
         )
-        .toList()
+        .toList(),
+      null
     );
   }
 
