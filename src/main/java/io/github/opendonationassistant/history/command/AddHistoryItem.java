@@ -1,26 +1,34 @@
 package io.github.opendonationassistant.history.command;
 
 import com.fasterxml.uuid.Generators;
-import io.github.opendonationassistant.HistoryItemData;
+
+import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.events.history.HistoryCommand;
 import io.github.opendonationassistant.events.history.HistoryCommandSender;
 import io.github.opendonationassistant.events.history.ReelResult;
 import io.github.opendonationassistant.events.history.TargetGoal;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
 import io.micronaut.serde.annotation.Serdeable;
+import jakarta.inject.Inject;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-@Serdeable
-public class AddHistoryItemCommand extends HistoryItemData {
+import org.jspecify.annotations.Nullable;
 
-  private boolean triggerAlert = false;
-  private boolean triggerReel = false;
-  private boolean triggerDonaton = false;
-  private boolean addToGoal = false;
-  private boolean addToTop = false;
+@Controller
+public class AddHistoryItem {
 
-  public void execute(HistoryCommandSender commandSender) {
+  private final HistoryCommandSender commandSender;
+
+  @Inject
+  public AddHistoryItem(HistoryCommandSender commandSender) {
+    this.commandSender = commandSender;
+  }
+
+  public void execute(@Body AddHistoryItemCommand command) {
     var created =
       new io.github.opendonationassistant.events.history.HistoryItemData(
         Generators.timeBasedEpochGenerator().generate().toString(),
@@ -68,39 +76,50 @@ public class AddHistoryItemCommand extends HistoryItemData {
     );
   }
 
-  public Boolean getTriggerAlert() {
-    return triggerAlert;
+  @Serdeable
+  public static record AddHistoryItemCommand(
+  String paymentId,
+  String nickname,
+  String recipientId,
+  Amount amount,
+  String message,
+  Instant authorizationTimestamp,
+  String system,
+  @Nullable String externalId,
+  List<Attachment> attachments,
+  List<TargetGoal> goals,
+  List<ReelResult> reelResults,
+  List<ActionRequest> actions,
+  @Nullable AlertMedia alertMedia,
+  @Nullable Vote vote,
+  String event,
+    boolean triggerAlert,
+    boolean triggerReel,
+    boolean triggerDonaton,
+    boolean addToGoal,
+    boolean addToTop
+  ) {
+
+  @Serdeable
+  public record ReelResult(String title) {}
+
+  @Serdeable
+  public record TargetGoal(String goalId, String goalTitle) {}
+
+  @Serdeable
+  public static record ActionRequest(
+    String id,
+    String actionId,
+    String name,
+    Integer amount,
+    Map<String, Object> payload
+  ) {}
+
+  @Serdeable
+  public static record AlertMedia(String url) {}
+
+  @Serdeable
+  public static record Vote(@Nullable String id, String name, Boolean isNew) {}
   }
 
-  public void setTriggerAlert(Boolean triggerAlert) {
-    this.triggerAlert = triggerAlert;
-  }
-
-  public Boolean getTriggerReel() {
-    return triggerReel;
-  }
-
-  public void setTriggerReel(Boolean triggerReel) {
-    this.triggerReel = triggerReel;
-  }
-
-  public Boolean getAddToGoal() {
-    return addToGoal;
-  }
-
-  public void setAddToGoal(Boolean addToGoal) {
-    this.addToGoal = addToGoal;
-  }
-
-  public Boolean getAddToTop() {
-    return addToTop;
-  }
-
-  public void setAddToTop(Boolean addToTop) {
-    this.addToTop = addToTop;
-  }
-
-  public void setTriggerDonaton(Boolean triggerDonaton) {
-    this.triggerDonaton = triggerDonaton;
-  }
 }

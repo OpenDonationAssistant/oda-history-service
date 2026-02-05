@@ -1,4 +1,4 @@
-package io.github.opendonationassistant;
+package io.github.opendonationassistant.history.repository;
 
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.Page;
@@ -9,20 +9,20 @@ import java.util.List;
 import java.util.Optional;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface HistoryItemRepository
-  extends CrudRepository<HistoryItem, String> {
-  public Page<HistoryItem> findByRecipientId(
+public interface HistoryItemDataRepository
+  extends CrudRepository<HistoryItemData, String> {
+  public Page<HistoryItemData> findByRecipientId(
     String recipientId,
     Pageable pageable
   );
 
-  public Page<HistoryItem> findByRecipientIdAndSystemIn(
+  public Page<HistoryItemData> findByRecipientIdAndSystemIn(
     String recipientId,
     List<String> system,
     Pageable pageable
   );
 
-  public Optional<HistoryItem> findByPaymentId(String paymentId);
+  public Optional<HistoryItemData> findByPaymentId(String paymentId);
 
-  public Optional<HistoryItem> findByExternalId(String externalId);
+  public Optional<HistoryItemData> findByExternalId(String externalId);
 }

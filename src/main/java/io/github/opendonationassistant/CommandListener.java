@@ -8,6 +8,7 @@ import io.github.opendonationassistant.events.alerts.AlertSender;
 import io.github.opendonationassistant.events.goal.GoalFacade;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInSpecifiedGoalCommand;
+import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;

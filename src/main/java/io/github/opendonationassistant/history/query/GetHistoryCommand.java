@@ -1,7 +1,7 @@
 package io.github.opendonationassistant.history.query;
 
-import io.github.opendonationassistant.HistoryItem;
-import io.github.opendonationassistant.HistoryItemRepository;
+import io.github.opendonationassistant.history.model.HistoryItem;
+import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.serde.annotation.Serdeable;
