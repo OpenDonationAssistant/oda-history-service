@@ -1,15 +1,11 @@
 package io.github.opendonationassistant.payment;
 
-import com.fasterxml.uuid.Generators;
-
 import io.github.opendonationassistant.action.ActionDataRepository;
 import io.github.opendonationassistant.commons.logging.ODALogger;
-import io.github.opendonationassistant.events.CompletedPaymentNotification;
-import io.github.opendonationassistant.events.history.HistoryCommand;
-import io.github.opendonationassistant.events.history.HistoryCommandSender;
-import io.github.opendonationassistant.events.history.HistoryItemData;
-import io.github.opendonationassistant.events.history.TargetGoal;
-import io.github.opendonationassistant.goal.GoalDataRepository;
+import io.github.opendonationassistant.events.payments.PaymentEvent;
+import io.github.opendonationassistant.history.repository.HistoryItemData;
+import io.github.opendonationassistant.history.repository.HistoryItemRepository;
+import io.micronaut.messaging.annotation.MessageHeader;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import jakarta.inject.Inject;
@@ -21,63 +17,58 @@ import java.util.Optional;
 public class PaymentListener {
 
   private final ODALogger log = new ODALogger(this);
-
-  private final HistoryCommandSender commandSender;
-  private final GoalDataRepository goalRepository;
+  private final HistoryItemRepository repository;
   private final ActionDataRepository actionRepository;
 
   @Inject
   public PaymentListener(
-    HistoryCommandSender commandSender,
-    GoalDataRepository goalRepository,
+    HistoryItemRepository repository,
     ActionDataRepository actionRepository
   ) {
-    this.commandSender = commandSender;
-    this.goalRepository = goalRepository;
+    this.repository = repository;
     this.actionRepository = actionRepository;
   }
 
-  @Queue(io.github.opendonationassistant.rabbit.Queue.Payments.HISTORY)
-  public void listen(CompletedPaymentNotification payment) {
-    log.info("Received notification for history", Map.of("payment", payment));
-
-    var partial = new HistoryItemData(
-      Generators.timeBasedEpochGenerator().generate().toString(),
-      payment.id(),
-      payment.nickname(),
-      payment.cleanNickname(),
-      payment.recipientId(),
-      payment.amount(),
-      payment.message(),
-      payment.cleanMessage(),
-      "ODA",
-      null,
-      payment.authorizationTimestamp(),
-      List.of(),
-      Optional.ofNullable(payment.goal())
-        .flatMap(goalRepository::findById)
-        .map(goal -> List.of(new TargetGoal(goal.id(), goal.title())))
-        .orElse(null),
-      null,
-      payment
-        .actions()
-        .stream()
-        .map(it ->
-          new HistoryItemData.ActionRequest(
-            it.id(),
-            it.actionId(),
-            actionRepository.findById(it.actionId()).get().name(),
-            it.amount(),
-            it.payload()
+  @Queue(io.github.opendonationassistant.rabbit.Queue.History.EVENTS)
+  public void listen(@MessageHeader("type") String type, PaymentEvent payment) {
+    log.debug("Received PaymentEvent", Map.of("payment", payment));
+    repository.create(
+      new HistoryItemData(
+        payment.id(),
+        "payment",
+        payment.recipientId(),
+        "ODA",
+        payment.id(),
+        payment.authorizationTimestamp(),
+        payment.nickname(),
+        payment.amount(),
+        payment.message(),
+        List.of(), //attachments
+        List.of(), //goals
+        // Optional.ofNullable(payment.goal()).map(List::of).orElse(List.of()),
+        List.of(), //reelResults
+        payment
+          .actions()
+          .stream()
+          .flatMap(it ->
+            actionRepository
+              .findById(it.actionId())
+              .map(action ->
+                new HistoryItemData.ActionRequest(
+                  it.id(),
+                  it.actionId(),
+                  action.name(),
+                  it.amount(),
+                  it.payload()
+                )
+              )
+              .stream()
           )
-        )
-        .toList(),
-      null
-    );
-
-    commandSender.send(
-      "history",
-      new HistoryCommand("create", partial, false, false, false, false, false)
+          .toList(),
+        Optional.ofNullable(payment.vote())
+          .map(it -> new HistoryItemData.Vote(it.id(), it.name(), it.isNew()))
+          .orElse(null)
+      )
     );
   }
 }

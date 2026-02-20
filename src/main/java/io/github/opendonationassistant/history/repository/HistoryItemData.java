@@ -1,8 +1,6 @@
 package io.github.opendonationassistant.history.repository;
 
 import io.github.opendonationassistant.commons.Amount;
-import io.github.opendonationassistant.events.CompletedPaymentNotification;
-import io.github.opendonationassistant.events.payments.PaymentFacade;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
@@ -17,50 +15,20 @@ import java.util.Map;
 @MappedEntity("history")
 public record HistoryItemData(
   @Id String id,
-  String paymentId,
-  String nickname,
+  @MappedProperty("event_type") String type,
   String recipientId,
-  Amount amount,
-  String message,
-  Instant authorizationTimestamp,
   String system,
-  @Nullable String externalId,
+  @Nullable String originId,
+  @MappedProperty("event_timestamp") Instant timestamp,
+  @Nullable String nickname,
+  @Nullable Amount amount,
+  @Nullable String message,
   @MappedProperty(type = DataType.JSON) List<Attachment> attachments,
   @MappedProperty(type = DataType.JSON) List<TargetGoal> goals,
   @MappedProperty(type = DataType.JSON) List<ReelResult> reelResults,
   @MappedProperty(type = DataType.JSON) List<ActionRequest> actions,
-  @Nullable AlertMedia alertMedia,
-  @Nullable Vote vote,
-  String event
+  @Nullable Vote vote
 ) {
-  public CompletedPaymentNotification makeNotification() {
-    return new CompletedPaymentNotification(
-      paymentId,
-      nickname,
-      nickname,
-      message,
-      message,
-      recipientId,
-      amount,
-      attachments.stream().map(Attachment::id).toList(),
-      goals.stream().findFirst().map(TargetGoal::goalId).orElse(""),
-      authorizationTimestamp,
-      system,
-      actions
-        .stream()
-        .map(request ->
-          new PaymentFacade.ActionRequest(
-            request.id,
-            request.actionId,
-            request.amount(),
-            request.payload
-          )
-        )
-        .toList(),
-      null
-    );
-  }
-
   @Serdeable
   public record Attachment(
     String id,

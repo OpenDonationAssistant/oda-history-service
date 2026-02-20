@@ -1,6 +1,10 @@
 package io.github.opendonationassistant.history.repository;
 
+import io.github.opendonationassistant.events.history.HistoryFacade;
+import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
 import io.github.opendonationassistant.history.model.HistoryItem;
+import io.micronaut.context.annotation.Mapper;
+import io.micronaut.context.annotation.Mapper.Mapping;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
@@ -12,10 +16,15 @@ import java.util.Optional;
 public class HistoryItemRepository {
 
   private final HistoryItemDataRepository repository;
+  private final HistoryFacade facade;
 
   @Inject
-  public HistoryItemRepository(HistoryItemDataRepository repository) {
+  public HistoryItemRepository(
+    HistoryItemDataRepository repository,
+    HistoryFacade facade
+  ) {
     this.repository = repository;
+    this.facade = facade;
   }
 
   public Page<HistoryItem> findByRecipientId(
@@ -25,6 +34,11 @@ public class HistoryItemRepository {
     return repository
       .findByRecipientId(recipientId, pageable)
       .map(this::convert);
+  }
+
+  public HistoryItem create(HistoryItemData data) {
+    repository.save(data);
+    return convert(data);
   }
 
   public Page<HistoryItem> findByRecipientIdAndSystemIn(
@@ -37,15 +51,16 @@ public class HistoryItemRepository {
       .map(this::convert);
   }
 
-  public Optional<HistoryItem> findByPaymentId(String paymentId) {
-    return repository.findByPaymentId(paymentId).map(this::convert);
-  }
-
-  public Optional<HistoryItem> findByExternalId(String externalId) {
-    return repository.findByExternalId(externalId).map(this::convert);
+  public Optional<HistoryItem> findByOriginId(String originId) {
+    return repository.findByOriginId(originId).map(this::convert);
   }
 
   private HistoryItem convert(HistoryItemData data) {
     return new HistoryItem(repository, data);
+  }
+
+  public static interface HistoryItemDataToEventMapper {
+    @Mapper
+    HistoryItemEvent map(HistoryItemData data);
   }
 }

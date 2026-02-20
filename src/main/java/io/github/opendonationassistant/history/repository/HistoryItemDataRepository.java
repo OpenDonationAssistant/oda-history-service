@@ -22,7 +22,5 @@ public interface HistoryItemDataRepository
     Pageable pageable
   );
 
-  public Optional<HistoryItemData> findByPaymentId(String paymentId);
-
-  public Optional<HistoryItemData> findByExternalId(String externalId);
+  public Optional<HistoryItemData> findByOriginId(String paymentId);
 }

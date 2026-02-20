@@ -19,14 +19,6 @@ public class HistoryItem {
   }
 
   public void save() {
-    repository
-      .findById(data.id())
-      .ifPresentOrElse(
-        old -> {
-          repository.update(data);
-        },
-        () -> repository.save(data)
-      );
+    repository.update(data);
   }
-
 }
