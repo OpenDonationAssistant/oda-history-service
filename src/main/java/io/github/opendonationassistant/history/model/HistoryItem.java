@@ -18,6 +18,10 @@ public class HistoryItem {
     this.data = data;
   }
 
+  public HistoryItemData data(){
+    return this.data;
+  }
+
   public void save() {
     repository.update(data);
   }

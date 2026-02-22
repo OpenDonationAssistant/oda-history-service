@@ -6,6 +6,9 @@ import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import java.time.Instant;
@@ -25,6 +28,8 @@ public class AddHistoryItem {
     this.repository = repository;
   }
 
+  @Post("/history/add")
+  @Secured(SecurityRule.IS_ANONYMOUS)
   public CompletableFuture<Void> execute(@Body AddHistoryItemCommand command) {
     var created = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),

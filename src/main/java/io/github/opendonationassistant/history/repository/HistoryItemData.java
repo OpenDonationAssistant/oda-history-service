@@ -19,7 +19,7 @@ public record HistoryItemData(
   String recipientId,
   String system,
   @Nullable String originId,
-  @MappedProperty("event_timestamp") Instant timestamp,
+  @MappedProperty(type = DataType.TIMESTAMP, value = "event_timestamp") Instant timestamp,
   @Nullable String nickname,
   @Nullable Amount amount,
   @Nullable String message,
@@ -27,7 +27,7 @@ public record HistoryItemData(
   @MappedProperty(type = DataType.JSON) List<TargetGoal> goals,
   @MappedProperty(type = DataType.JSON) List<ReelResult> reelResults,
   @MappedProperty(type = DataType.JSON) List<ActionRequest> actions,
-  @Nullable Vote vote
+  @MappedProperty(type = DataType.JSON) @Nullable Vote vote
 ) {
   @Serdeable
   public record Attachment(

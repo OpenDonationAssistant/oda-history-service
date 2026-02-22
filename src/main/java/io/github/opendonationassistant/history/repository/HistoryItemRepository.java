@@ -1,20 +1,22 @@
 package io.github.opendonationassistant.history.repository;
 
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
 import io.github.opendonationassistant.history.model.HistoryItem;
 import io.micronaut.context.annotation.Mapper;
-import io.micronaut.context.annotation.Mapper.Mapping;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Singleton
 public class HistoryItemRepository {
 
+  private final ODALogger log = new ODALogger(this);
   private final HistoryItemDataRepository repository;
   private final HistoryFacade facade;
 
@@ -37,6 +39,7 @@ public class HistoryItemRepository {
   }
 
   public HistoryItem create(HistoryItemData data) {
+    log.debug("Saving history item", Map.of("data", data));
     repository.save(data);
     return convert(data);
   }

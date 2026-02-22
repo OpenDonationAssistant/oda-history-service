@@ -1,16 +1,18 @@
 package io.github.opendonationassistant.history.webhook;
 
 import com.fasterxml.uuid.Generators;
-import io.github.opendonationassistant.HistoryItem;
-import io.github.opendonationassistant.HistoryItemRepository;
 import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.logging.ODALogger;
+import io.github.opendonationassistant.history.repository.HistoryItemData;
+import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.scheduling.TaskExecutors;
+import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
@@ -32,6 +34,7 @@ public class DonateStreamWebhook {
 
   @Post("/notification/donate.stream/{recipientId}/{token}")
   @Secured(SecurityRule.IS_ANONYMOUS)
+  @ExecuteOn(TaskExecutors.BLOCKING)
   public HttpResponse<String> addHistoryItem(
     @PathVariable("recipientId") String recipientId,
     @PathVariable("token") String token,
@@ -49,22 +52,24 @@ public class DonateStreamWebhook {
     String recipientId,
     DonateStreamWebhookBody body
   ) {
-    HistoryItem created = new HistoryItem();
-    created.setId(Generators.timeBasedEpochGenerator().generate().toString());
-    created.setAmount(parseAmount(body.sum()));
-    created.setMessage(body.message());
-    created.setNickname(body.nickname());
-    created.setPaymentId(
-      Generators.timeBasedEpochGenerator().generate().toString()
+    repository.create(
+      new HistoryItemData(
+        Generators.timeBasedEpochGenerator().generate().toString(),
+        "payment",
+        recipientId,
+        "Donate.Stream",
+        body.uid(),
+        Instant.now(),
+        body.nickname(),
+        parseAmount(body.sum()),
+        body.message(),
+        List.of(),
+        List.of(),
+        List.of(),
+        List.of(),
+        null
+      )
     );
-    created.setGoals(List.of());
-    created.setRecipientId(recipientId);
-    created.setAttachments(List.of());
-    created.setReelResults(List.of());
-    created.setSystem("Donate.Stream");
-    created.setExternalId(body.uid());
-    created.setAuthorizationTimestamp(Instant.now());
-    repository.save(created);
   }
 
   private Amount parseAmount(String sum) {
