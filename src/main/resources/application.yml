@@ -1,4 +1,7 @@
 micronaut:
+  serde:
+    serialization:
+      inclusion: ALWAYS
   application:
     name: oda-history-service
   router:
