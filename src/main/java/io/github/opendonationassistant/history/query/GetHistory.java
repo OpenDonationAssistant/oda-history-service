@@ -8,6 +8,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
@@ -17,7 +18,7 @@ import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
-@Serdeable
+@Controller
 public class GetHistory extends BaseController {
 
   private final HistoryItemRepository repository;

@@ -2,12 +2,15 @@ package io.github.opendonationassistant.history.command;
 
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.commons.logging.ODALogger;
+import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
@@ -19,9 +22,10 @@ import java.util.concurrent.CompletableFuture;
 import org.jspecify.annotations.Nullable;
 
 @Controller
-public class AddHistoryItem {
+public class AddHistoryItem extends BaseController {
 
   private final HistoryItemRepository repository;
+  private final ODALogger log = new ODALogger(this);
 
   @Inject
   public AddHistoryItem(HistoryItemRepository repository) {
@@ -29,8 +33,13 @@ public class AddHistoryItem {
   }
 
   @Post("/history/add")
-  @Secured(SecurityRule.IS_ANONYMOUS)
-  public CompletableFuture<Void> execute(@Body AddHistoryItemCommand command) {
+  @Secured(SecurityRule.IS_AUTHENTICATED)
+  public CompletableFuture<Void> execute(Authentication auth, @Body AddHistoryItemCommand command) {
+    log.debug("AddHistoryItemCommand Authentication", Map.of("auth", auth));
+    var recipientId = getOwnerId(auth);
+    if (recipientId.isEmpty()) {
+      return CompletableFuture.completedFuture(null);
+    }
     var created = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
       "payment",
