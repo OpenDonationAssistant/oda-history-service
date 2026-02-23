@@ -4,40 +4,19 @@ micronaut:
       inclusion: ALWAYS
   application:
     name: oda-history-service
-  router:
-    static-resources:
-      swagger:
-        paths: classpath:META-INF/swagger
-        mapping: /swagger/**
-      openapi-explorer:
-        paths: classpath:META-INF/swagger/views/openapi-explorer
-        mapping: /openapi-explorer/**
   security:
     authentication: bearer
     token:
       bearer:
-        enabled: true
-      cookie:
         enabled: true
       jwt:
         signatures:
           jwks:
             keycloak:
               url: https://auth.oda.digital/realms/ODA/protocol/openid-connect/certs
-    intercept-url-map:
-      - pattern: /control-panel/**
-        access:
-          - isAnonymous()
   caches:
     jwks:
       expire-after-write: 240h
-  control-panel:
-    enabled: true
-    allowed-environments:
-      - k8s
-      - cloud
-      - standalone
-      - allinone
   executors:
     history-command-listener:
       type: fixed
