@@ -34,7 +34,7 @@ public class AddHistoryItem extends BaseController {
 
   @Post("/history/add")
   @Secured(SecurityRule.IS_AUTHENTICATED)
-  public CompletableFuture<Void> execute(Authentication auth, @Body AddHistoryItemCommand command) {
+  public CompletableFuture<Void> addHistoryItem(Authentication auth, @Body AddHistoryItemCommand command) {
     log.debug("AddHistoryItemCommand Authentication", Map.of("auth", auth));
     var recipientId = getOwnerId(auth);
     if (recipientId.isEmpty()) {

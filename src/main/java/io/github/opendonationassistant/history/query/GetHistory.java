@@ -30,7 +30,7 @@ public class GetHistory extends BaseController {
 
   @Post("/history/get")
   @Secured(SecurityRule.IS_AUTHENTICATED)
-  public HttpResponse<Page<HistoryItemData>> execute(
+  public HttpResponse<Page<HistoryItemData>> getHistory(
     Authentication auth,
     Pageable pageable,
     @Body GetHistoryCommand command
