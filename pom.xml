@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.opendonationassistant</groupId>
   <artifactId>oda-history-service</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
   <packaging>${packaging}</packaging>
 
   <parent>
@@ -16,10 +16,8 @@
     <packaging>jar</packaging>
     <jdk.version>25</jdk.version>
     <release.version>25</release.version>
-    <micronaut.test.resources.enabled>true</micronaut.test.resources.enabled>
     <micronaut.aot.enabled>false</micronaut.aot.enabled>
     <micronaut.aot.packageName>io.github.opendonationassistant.aot.generated</micronaut.aot.packageName>
-    <micronaut.runtime>netty</micronaut.runtime>
     <exec.mainClass>io.github.opendonationassistant.Application</exec.mainClass>
   </properties>
 
