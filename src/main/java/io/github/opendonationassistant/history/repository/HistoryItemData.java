@@ -6,6 +6,7 @@ import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
 import io.micronaut.data.model.DataType;
 import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.sourcegen.annotations.Wither;
 import jakarta.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @Serdeable
 @MappedEntity("history")
+@Wither
 public record HistoryItemData(
   @Id String id,
   @MappedProperty("event_type") String type,
@@ -28,7 +30,7 @@ public record HistoryItemData(
   @MappedProperty(type = DataType.JSON) List<ReelResult> reelResults,
   @MappedProperty(type = DataType.JSON) List<ActionRequest> actions,
   @MappedProperty(type = DataType.JSON) @Nullable Vote vote
-) {
+) implements HistoryItemDataWither {
   @Serdeable
   public record Attachment(
     String id,

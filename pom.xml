@@ -32,17 +32,21 @@
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
       <artifactId>oda-rabbit-conf</artifactId>
-      <version>0.10.146</version>
+      <version>0.10.154</version>
     </dependency>
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
       <artifactId>oda-test-utils</artifactId>
-      <version>0.10.146</version>
+      <version>0.10.154</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.uuid</groupId>
       <artifactId>java-uuid-generator</artifactId>
       <version>5.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.sourcegen</groupId>
+      <artifactId>micronaut-sourcegen-annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>io.micronaut</groupId>
@@ -220,6 +224,10 @@
         <configuration>
           <useIncrementalCompilation>false</useIncrementalCompilation>
           <annotationProcessorPaths combine.self="override">
+            <path>
+              <groupId>io.micronaut.sourcegen</groupId>
+              <artifactId>micronaut-sourcegen-generator-java</artifactId>
+            </path>
             <path>
               <groupId>io.micronaut</groupId>
               <artifactId>micronaut-inject-java</artifactId>

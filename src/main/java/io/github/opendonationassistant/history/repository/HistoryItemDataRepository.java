@@ -11,12 +11,12 @@ import java.util.Optional;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface HistoryItemDataRepository
   extends CrudRepository<HistoryItemData, String> {
-  public Page<HistoryItemData> findByRecipientId(
+  public Page<HistoryItemData> findByRecipientIdOrderByTimestampDesc(
     String recipientId,
     Pageable pageable
   );
 
-  public Page<HistoryItemData> findByRecipientIdAndSystemIn(
+  public Page<HistoryItemData> findByRecipientIdAndSystemInOrderByTimestampDesc(
     String recipientId,
     List<String> system,
     Pageable pageable

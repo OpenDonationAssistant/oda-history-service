@@ -12,6 +12,8 @@ import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
 
 @Singleton
 public class HistoryItemRepository {
@@ -29,19 +31,57 @@ public class HistoryItemRepository {
     this.facade = facade;
   }
 
+  public Optional<HistoryItem> findById(@Nullable String historyItemId) {
+    return Optional.ofNullable(historyItemId)
+      .flatMap(id -> repository.findById(id))
+      .map(this::convert);
+  }
+
   public Page<HistoryItem> findByRecipientId(
     String recipientId,
     Pageable pageable
   ) {
     return repository
-      .findByRecipientId(recipientId, pageable)
+      .findByRecipientIdOrderByTimestampDesc(recipientId, pageable)
       .map(this::convert);
   }
 
-  public HistoryItem create(HistoryItemData data) {
+  public CompletableFuture<HistoryItem> create(HistoryItemData data) {
     log.debug("Saving history item", Map.of("data", data));
     repository.save(data);
-    return convert(data);
+    return facade
+      .sendEvent(
+        new HistoryItemEvent(
+          data.id(),
+          data.type(),
+          data.recipientId(),
+          data.system(),
+          data.originId(),
+          data.timestamp(),
+          data.nickname(),
+          data.amount(),
+          data.message(),
+          data.goals().stream().map(it -> it.goalId()).toList(),
+          data
+            .actions()
+            .stream()
+            .map(it ->
+              new HistoryItemEvent.ActionRequest(
+                it.id(),
+                it.actionId(),
+                it.name(),
+                it.amount(),
+                it.payload()
+              )
+            )
+            .toList(),
+          Optional.ofNullable(data.vote())
+            .map(it -> new HistoryItemEvent.Vote(it.id(), it.name(), it.isNew())
+            )
+            .orElse(null)
+        )
+      )
+      .thenApply(it -> convert(data));
   }
 
   public Page<HistoryItem> findByRecipientIdAndSystemIn(
@@ -50,7 +90,11 @@ public class HistoryItemRepository {
     Pageable pageable
   ) {
     return repository
-      .findByRecipientIdAndSystemIn(recipientId, system, pageable)
+      .findByRecipientIdAndSystemInOrderByTimestampDesc(
+        recipientId,
+        system,
+        pageable
+      )
       .map(this::convert);
   }
 
