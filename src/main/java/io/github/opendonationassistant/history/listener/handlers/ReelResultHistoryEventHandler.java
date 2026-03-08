@@ -24,7 +24,10 @@ public class ReelResultHistoryEventHandler implements MessageHandler {
 
   @Override
   public void handle(byte[] message) throws IOException {
-    final var event = objectMapper.readValue(message, ReelResultHistoryEvent.class);
+    final var event = objectMapper.readValue(
+      message,
+      ReelResultHistoryEvent.class
+    );
     if (event == null) {
       return;
     }
