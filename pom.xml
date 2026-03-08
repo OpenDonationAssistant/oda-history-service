@@ -16,6 +16,7 @@
     <packaging>jar</packaging>
     <jdk.version>25</jdk.version>
     <release.version>25</release.version>
+    <micronaut.test.resources.enabled>true</micronaut.test.resources.enabled>
     <micronaut.aot.enabled>false</micronaut.aot.enabled>
     <micronaut.aot.packageName>io.github.opendonationassistant.aot.generated</micronaut.aot.packageName>
     <exec.mainClass>io.github.opendonationassistant.Application</exec.mainClass>
@@ -49,6 +50,10 @@
       <groupId>io.github.opendonationassistant</groupId>
       <artifactId>oda-rabbit-conf</artifactId>
       <version>0.10.160</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.rabbitmq</groupId>
+      <artifactId>micronaut-rabbitmq</artifactId>
     </dependency>
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
@@ -86,11 +91,6 @@
     <dependency>
       <groupId>io.micronaut.problem</groupId>
       <artifactId>micronaut-problem-json</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut.rabbitmq</groupId>
-      <artifactId>micronaut-rabbitmq</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
