@@ -25,7 +25,7 @@ public class GoalHistoryEventHandler implements MessageHandler {
   @Override
   public void handle(byte[] message) throws IOException {
     final var event = objectMapper.readValue(message, GoalHistoryEvent.class);
-    if (event == null) {
+    if (event == null || event.originId() == null) {
       return;
     }
     repository

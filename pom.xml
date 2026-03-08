@@ -19,6 +19,12 @@
     <micronaut.aot.enabled>false</micronaut.aot.enabled>
     <micronaut.aot.packageName>io.github.opendonationassistant.aot.generated</micronaut.aot.packageName>
     <exec.mainClass>io.github.opendonationassistant.Application</exec.mainClass>
+    <sonar.organization>opendonationassistant</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+    <sonar.language>java</sonar.language>
   </properties>
 
   <repositories>
@@ -42,7 +48,7 @@
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
       <artifactId>oda-rabbit-conf</artifactId>
-      <version>0.10.156</version>
+      <version>0.10.160</version>
     </dependency>
     <dependency>
       <groupId>io.github.opendonationassistant</groupId>
@@ -338,17 +344,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-          <groupId>org.graalvm.buildtools</groupId>
-          <artifactId>native-maven-plugin</artifactId>
-          <version>0.11.3</version>
-          <configuration>
-              <buildArgs>
-                  <buildArg>--initialize-at-build-time=io.micronaut.context.ApplicationContextConfigurer$1</buildArg>
-                  <buildArg>-H:+SharedArenaSupport</buildArg>
-              </buildArgs>
-          </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>

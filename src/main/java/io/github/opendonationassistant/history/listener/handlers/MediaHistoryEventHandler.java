@@ -28,6 +28,9 @@ public class MediaHistoryEventHandler implements MessageHandler {
   @Override
   public void handle(byte[] message) throws IOException {
     var event = objectMapper.readValue(message, MediaHistoryEvent.class);
+    if (event == null) {
+      return;
+    }
     log.debug("Received MediaHistoryEvent", Map.of("notification", event));
     repository
       .findById(event.originId())

@@ -28,7 +28,7 @@ public class ReelResultHistoryEventHandler implements MessageHandler {
       message,
       ReelResultHistoryEvent.class
     );
-    if (event == null) {
+    if (event == null ||  event.originId() == null) {
       return;
     }
     repository

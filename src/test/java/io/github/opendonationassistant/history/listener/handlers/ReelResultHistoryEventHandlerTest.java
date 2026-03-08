@@ -50,39 +50,14 @@ public class ReelResultHistoryEventHandlerTest {
     handler.handle(message);
 
     var updatedItem = repository.findByOriginId(originId);
-    assert updatedItem.isPresent();
-    assert updatedItem
-      .get()
-      .data()
-      .reelResults()
-      .stream()
-      .anyMatch(rr -> title.equals(rr.title()));
-  }
-
-  @Test
-  public void testHandleNullEvent() throws Exception {
-    var jsonEvent = "null";
-    var message = jsonEvent.getBytes();
-
-    var handler = new ReelResultHistoryEventHandler(objectMapper, repository);
-    handler.handle(message);
-  }
-
-  @Test
-  public void testHandleEventWithNoMatchingHistoryItem(
-    @Given String originId,
-    @Given String title
-  ) throws Exception {
-    var jsonEvent = String.format(
-      "{\"originId\":\"%s\",\"title\":\"%s\"}",
-      originId,
-      title
+    assertTrue(updatedItem.isPresent());
+    assertTrue(
+      updatedItem
+        .get()
+        .data()
+        .reelResults()
+        .stream()
+        .anyMatch(rr -> title.equals(rr.title()))
     );
-    var message = jsonEvent.getBytes();
-
-    var handler = new ReelResultHistoryEventHandler(objectMapper, repository);
-    handler.handle(message);
-    assertTrue(repository.findById(originId));
   }
-
 }

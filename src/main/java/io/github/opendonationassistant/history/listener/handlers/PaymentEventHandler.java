@@ -33,7 +33,10 @@ public class PaymentEventHandler implements MessageHandler {
 
   @Override
   public void handle(byte[] message) throws IOException {
-    var payment = objectMapper.readValue(message, PaymentEvent.class);
+    final var payment = objectMapper.readValue(message, PaymentEvent.class);
+    if (payment == null) {
+      return;
+    }
     log.debug("Received PaymentEvent", Map.of("payment", payment));
     repository.create(
       new HistoryItemData(
@@ -67,9 +70,7 @@ public class PaymentEventHandler implements MessageHandler {
               .stream()
           )
           .toList(),
-        Optional.ofNullable(payment.vote())
-          .map(it -> new HistoryItemData.Vote(it.id(), it.name(), it.isNew()))
-          .orElse(null)
+        null // vote
       )
     );
   }
