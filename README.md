@@ -1,3 +1,6 @@
+# ODA History Service
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/OpenDonationAssistant/oda-history-service)
+
 ## Micronaut 4.4.2 Documentation
 
 - [User Guide](https://docs.micronaut.io/4.4.2/guide/index.html)
