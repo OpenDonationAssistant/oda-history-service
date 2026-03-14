@@ -2,6 +2,7 @@ package io.github.opendonationassistant.history.listener;
 
 import io.github.opendonationassistant.events.MessageProcessor;
 import io.micronaut.messaging.annotation.MessageHeader;
+import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import io.micronaut.rabbitmq.bind.RabbitAcknowledgement;
 import jakarta.inject.Inject;
@@ -16,6 +17,7 @@ public class CommandListener {
     this.processor = processor;
   }
 
+  @Queue(io.github.opendonationassistant.rabbit.Queue.History.COMMAND)
   public void listenHistoryCommands(
     @MessageHeader("type") String type,
     byte[] payload,

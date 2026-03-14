@@ -2,7 +2,6 @@ package io.github.opendonationassistant.action;
 
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.actions.ActionSender;
-import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import io.micronaut.rabbitmq.bind.RabbitAcknowledgement;
 import jakarta.inject.Inject;
@@ -21,7 +20,6 @@ public class ActionListener {
     this.repository = repository;
   }
 
-  @Queue(io.github.opendonationassistant.rabbit.Queue.History.ACTIONS)
   public void listen(
     List<ActionSender.Action> actions,
     RabbitAcknowledgement ack

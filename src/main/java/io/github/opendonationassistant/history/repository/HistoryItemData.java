@@ -21,7 +21,8 @@ public record HistoryItemData(
   String recipientId,
   String system,
   @Nullable String originId,
-  @MappedProperty(type = DataType.TIMESTAMP, value = "event_timestamp") Instant timestamp,
+  @MappedProperty(type = DataType.TIMESTAMP, value = "event_timestamp")
+  Instant timestamp,
   @Nullable String nickname,
   @Nullable Amount amount,
   @Nullable String message,
@@ -29,8 +30,11 @@ public record HistoryItemData(
   @MappedProperty(type = DataType.JSON) List<TargetGoal> goals,
   @MappedProperty(type = DataType.JSON) List<ReelResult> reelResults,
   @MappedProperty(type = DataType.JSON) List<ActionRequest> actions,
-  @MappedProperty(type = DataType.JSON) @Nullable Vote vote
-) implements HistoryItemDataWither {
+  @MappedProperty(type = DataType.JSON) @Nullable Vote vote,
+  @MappedProperty(type = DataType.JSON) List<Alert> alerts
+)
+  implements HistoryItemDataWither {
+
   @Serdeable
   public record Attachment(
     String id,
@@ -55,8 +59,8 @@ public record HistoryItemData(
   ) {}
 
   @Serdeable
-  public static record AlertMedia(String url) {}
+  public static record Vote(@Nullable String id, String name, Boolean isNew) {}
 
   @Serdeable
-  public static record Vote(@Nullable String id, String name, Boolean isNew) {}
+  public static record Alert(String id, Instant shownAt) {}
 }

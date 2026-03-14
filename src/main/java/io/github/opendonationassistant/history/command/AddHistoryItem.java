@@ -66,7 +66,8 @@ public class AddHistoryItem extends BaseController {
       //   .toList(),
       List.of(), // command.reelResults(),
       List.of(), // command.actions(),
-      null // command.vote()
+      null, // command.vote(),
+      List.of()
     );
     return CompletableFuture.runAsync(() -> repository.create(created));
   }

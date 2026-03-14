@@ -67,7 +67,8 @@ public class DonateStreamWebhook {
         List.of(),
         List.of(),
         List.of(),
-        null
+        null,
+        List.of()
       )
     );
   }
