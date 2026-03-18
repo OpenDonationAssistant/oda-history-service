@@ -16,6 +16,10 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
@@ -35,6 +39,15 @@ public class DonateStreamWebhook {
   @Post("/notification/donate.stream/{recipientId}/{token}")
   @Secured(SecurityRule.IS_ANONYMOUS)
   @ExecuteOn(TaskExecutors.BLOCKING)
+  @Operation(
+    summary = "Handle Donate.Stream webhook notifications",
+    description = "Receives donation notifications from Donate.Stream and creates history items"
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "Successfully processed the webhook",
+    content = @Content(mediaType = "text/plain")
+  )
   public HttpResponse<String> addHistoryItem(
     @PathVariable("recipientId") String recipientId,
     @PathVariable("token") String token,
@@ -86,11 +99,15 @@ public class DonateStreamWebhook {
   }
 
   @Serdeable
+  @Schema(
+    description = "Donate.Stream webhook payload",
+    requiredProperties = {"type", "uid"}
+  )
   public static record DonateStreamWebhookBody(
-    String type,
-    String uid,
-    String message,
-    String nickname,
-    String sum
+    @Schema(description = "Event type (e.g., 'confirm', 'donation')") String type,
+    @Schema(description = "Unique identifier from Donate.Stream") String uid,
+    @Schema(description = "Donation message from the donor") String message,
+    @Schema(description = "Donor's nickname") String nickname,
+    @Schema(description = "Donation amount as string (e.g., '100.00')") String sum
   ) {}
 }

@@ -13,6 +13,9 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
@@ -34,6 +37,14 @@ public class AddHistoryItem extends BaseController {
 
   @Post("/history/add")
   @Secured(SecurityRule.IS_AUTHENTICATED)
+  @Operation(
+    summary = "Add a new history item",
+    description = "Creates a new donation history item for the authenticated user"
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "Successfully created the history item"
+  )
   public CompletableFuture<Void> addHistoryItem(Authentication auth, @Body AddHistoryItemCommand command) {
     log.debug("AddHistoryItemCommand Authentication", Map.of("auth", auth));
     var recipientId = getOwnerId(auth);
@@ -73,54 +84,64 @@ public class AddHistoryItem extends BaseController {
   }
 
   @Serdeable
+  @Schema(description = "Command to add a new history item")
   public static record AddHistoryItemCommand(
-    @Nullable String paymentId,
-    String nickname,
-    String recipientId,
-    Amount amount,
-    String message,
-    Instant authorizationTimestamp,
-    String system,
-    @Nullable String externalId,
-    List<Attachment> attachments,
-    List<TargetGoal> goals,
-    List<ReelResult> reelResults,
-    List<ActionRequest> actions,
-    @Nullable AlertMedia alertMedia,
-    @Nullable Vote vote,
-    String event,
-    boolean triggerAlert,
-    boolean triggerReel,
-    boolean triggerDonaton,
-    boolean addToGoal,
-    boolean addToTop
+    @Nullable @Schema(description = "Payment ID from the source system") String paymentId,
+    @Schema(description = "Donor's nickname") String nickname,
+    @Schema(description = "Recipient ID (streamer/creator)") String recipientId,
+    @Schema(description = "Donation amount") Amount amount,
+    @Schema(description = "Message from the donor") String message,
+    @Schema(description = "Authorization timestamp") Instant authorizationTimestamp,
+    @Schema(description = "Source system name") String system,
+    @Nullable @Schema(description = "External ID from the source system") String externalId,
+    @Schema(description = "Attached media files") List<Attachment> attachments,
+    @Schema(description = "Target goals") List<TargetGoal> goals,
+    @Schema(description = "Reel results from social media") List<ReelResult> reelResults,
+    @Schema(description = "Action requests triggered by the donation") List<ActionRequest> actions,
+    @Nullable @Schema(description = "Alert media URL") AlertMedia alertMedia,
+    @Nullable @Schema(description = "Vote information") Vote vote,
+    @Schema(description = "Event type") String event,
+    @Schema(description = "Whether to trigger an alert") boolean triggerAlert,
+    @Schema(description = "Whether to trigger a reel") boolean triggerReel,
+    @Schema(description = "Whether to trigger donation processing") boolean triggerDonaton,
+    @Schema(description = "Whether to add to goal") boolean addToGoal,
+    @Schema(description = "Whether to add to top") boolean addToTop
   ) {
     @Serdeable
-    public record Attachment(String id) {}
+    @Schema(description = "Media attachment")
+    public record Attachment(@Schema(description = "Attachment ID") String id) {}
 
     @Serdeable
-    public record ReelResult(String title) {}
+    @Schema(description = "Reel result from social media")
+    public record ReelResult(@Schema(description = "Title of the reel") String title) {}
 
     @Serdeable
-    public record TargetGoal(String goalId, String goalTitle) {}
-
-    @Serdeable
-    public static record ActionRequest(
-      String id,
-      String actionId,
-      String name,
-      Integer amount,
-      Map<String, Object> payload
+    @Schema(description = "Target goal")
+    public record TargetGoal(
+      @Schema(description = "Goal ID") String goalId,
+      @Schema(description = "Goal title") String goalTitle
     ) {}
 
     @Serdeable
-    public static record AlertMedia(String url) {}
+    @Schema(description = "Action request triggered by donation")
+    public static record ActionRequest(
+      @Schema(description = "Action request ID") String id,
+      @Schema(description = "Action ID") String actionId,
+      @Schema(description = "Action name") String name,
+      @Schema(description = "Amount required for the action") Integer amount,
+      @Schema(description = "Action payload data") Map<String, Object> payload
+    ) {}
 
     @Serdeable
+    @Schema(description = "Alert media")
+    public static record AlertMedia(@Schema(description = "Alert media URL") String url) {}
+
+    @Serdeable
+    @Schema(description = "Vote information")
     public static record Vote(
-      @Nullable String id,
-      String name,
-      Boolean isNew
+      @Nullable @Schema(description = "Vote ID") String id,
+      @Schema(description = "Vote name") String name,
+      @Schema(description = "Is this a new vote?") Boolean isNew
     ) {}
   }
 }
