@@ -7,6 +7,7 @@ import io.github.opendonationassistant.history.repository.HistoryItemData.Target
 import io.github.opendonationassistant.history.repository.HistoryItemDataRepository;
 import io.micronaut.serde.annotation.Serdeable;
 import java.util.ArrayList;
+import java.util.List;
 
 @Serdeable
 public class HistoryItem {
@@ -24,6 +25,13 @@ public class HistoryItem {
 
   public HistoryItemData data() {
     return this.data;
+  }
+
+  public void addActions(List<HistoryItemData.ActionRequest> actions) {
+    var mergedActions = new ArrayList(data.actions());
+    mergedActions.addAll(actions);
+    data = data.withActions(mergedActions);
+    save();
   }
 
   public void addGoal(TargetGoal goal) {

@@ -1,6 +1,5 @@
 package io.github.opendonationassistant.history.listener.handlers;
 
-import io.github.opendonationassistant.action.ActionDataRepository;
 import io.github.opendonationassistant.events.AbstractMessageHandler;
 import io.github.opendonationassistant.events.payments.PaymentEvent;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
@@ -15,17 +14,14 @@ import java.util.List;
 public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
 
   private final HistoryItemRepository repository;
-  private final ActionDataRepository actionRepository;
 
   @Inject
   public PaymentEventHandler(
     ObjectMapper mapper,
-    HistoryItemRepository repository,
-    ActionDataRepository actionRepository
+    HistoryItemRepository repository
   ) {
     super(mapper);
     this.repository = repository;
-    this.actionRepository = actionRepository;
   }
 
   @Override
@@ -44,24 +40,7 @@ public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
         List.of(), //attachments
         List.of(), //goals
         List.of(), //reelResults
-        event
-          .actions()
-          .stream()
-          .flatMap(it ->
-            actionRepository
-              .findById(it.actionId())
-              .map(action ->
-                new HistoryItemData.ActionRequest(
-                  it.id(),
-                  it.actionId(),
-                  action.name(),
-                  it.amount(),
-                  it.payload()
-                )
-              )
-              .stream()
-          )
-          .toList(),
+        List.of(), //actions
         null, // vote
         List.of()
       )
