@@ -118,7 +118,7 @@ public class AddHistoryItem
           command.amount(),
           command.paymentId()
         )
-      );
+      ).join();
     }
     if (command.triggerAlert()) {
       facade.sendEvent(
@@ -132,7 +132,7 @@ public class AddHistoryItem
             .map(AlertMedia::url)
             .orElse(null)
         )
-      );
+      ).join();
     }
     if (command.triggerReel()) {
       facade.sendEvent(
@@ -141,7 +141,7 @@ public class AddHistoryItem
           command.paymentId(),
           command.amount()
         )
-      );
+      ).join();
     }
     return CompletableFuture.runAsync(() -> repository.create(data))
       .thenCompose(v ->
