@@ -63,7 +63,8 @@ public class AddHistoryItem
     if (recipientId.isEmpty()) {
       return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
-    if (command.paymentId() == null) {
+    final var paymentId = command.paymentId();
+    if (paymentId == null) {
       return CompletableFuture.completedFuture(HttpResponse.badRequest());
     }
     var data = new HistoryItemData(
@@ -92,7 +93,7 @@ public class AddHistoryItem
     ) {
       goalFacade.run(
         new CountPaymentInSpecifiedGoalCommand(
-          command.paymentId(),
+          paymentId,
           command.recipientId(),
           command.goals().getFirst().goalId(),
           command.amount()
@@ -105,7 +106,7 @@ public class AddHistoryItem
     ) {
       goalFacade.run(
         new CountPaymentInDefaultGoalCommand(
-          command.paymentId(),
+          paymentId,
           command.recipientId(),
           command.amount()
         )
@@ -118,7 +119,7 @@ public class AddHistoryItem
           new ChangeDonatonCommand(
             command.recipientId(),
             command.amount(),
-            command.paymentId()
+            paymentId
           )
         )
       );
@@ -127,7 +128,7 @@ public class AddHistoryItem
       chain = chain.thenCompose(v ->
         facade.sendEvent(
           new CreateAlertCommand(
-            command.paymentId(),
+            paymentId,
             command.recipientId(),
             command.nickname(),
             command.message(),
@@ -144,7 +145,7 @@ public class AddHistoryItem
         facade.sendEvent(
           new LinkReelCommand(
             command.recipientId(),
-            command.paymentId(),
+            paymentId,
             command.amount()
           )
         )
