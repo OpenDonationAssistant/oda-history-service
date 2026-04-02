@@ -48,6 +48,10 @@ public class Application {
           "donaton",
           Map.of("event.DonatonDeadlineChanged", events)
         ),
+        Exchange.Exchange(
+          "actions",
+          Map.of("event.ActionHistoryEvent", events)
+        ),
         Exchange.Exchange("history", Map.of("event.MediaHistoryEvent", events))
       )
     );
