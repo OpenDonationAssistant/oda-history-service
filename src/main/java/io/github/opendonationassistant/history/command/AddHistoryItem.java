@@ -111,39 +111,47 @@ public class AddHistoryItem
         )
       );
     }
+    CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (command.triggerDonaton()) {
-      facade.sendEvent(
-        new ChangeDonatonCommand(
-          command.recipientId(),
-          command.amount(),
-          command.paymentId()
+      chain = chain.thenCompose(v ->
+        facade.sendEvent(
+          new ChangeDonatonCommand(
+            command.recipientId(),
+            command.amount(),
+            command.paymentId()
+          )
         )
-      ).join();
+      );
     }
     if (command.triggerAlert()) {
-      facade.sendEvent(
-        new CreateAlertCommand(
-          command.paymentId(),
-          command.recipientId(),
-          command.nickname(),
-          command.message(),
-          command.amount(),
-          Optional.ofNullable(command.alertMedia())
-            .map(AlertMedia::url)
-            .orElse(null)
+      chain = chain.thenCompose(v ->
+        facade.sendEvent(
+          new CreateAlertCommand(
+            command.paymentId(),
+            command.recipientId(),
+            command.nickname(),
+            command.message(),
+            command.amount(),
+            Optional.ofNullable(command.alertMedia())
+              .map(AlertMedia::url)
+              .orElse(null)
+          )
         )
-      ).join();
+      );
     }
     if (command.triggerReel()) {
-      facade.sendEvent(
-        new LinkReelCommand(
-          command.recipientId(),
-          command.paymentId(),
-          command.amount()
+      chain = chain.thenCompose(v ->
+        facade.sendEvent(
+          new LinkReelCommand(
+            command.recipientId(),
+            command.paymentId(),
+            command.amount()
+          )
         )
-      ).join();
+      );
     }
-    return CompletableFuture.runAsync(() -> repository.create(data))
+    return chain
+      .thenRun(() -> repository.create(data))
       .thenCompose(v ->
         command.addToTop()
           ? sendEvent(
