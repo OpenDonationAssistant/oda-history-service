@@ -86,33 +86,33 @@ public class AddHistoryItem
       null, // votes
       List.of()
     );
+    CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (
       command.addToGoal() &&
       command.goals() != null &&
       command.goals().size() > 0
     ) {
-      goalFacade.run(
+      chain = chain.thenRunAsync(() -> goalFacade.run(
         new CountPaymentInSpecifiedGoalCommand(
           paymentId,
           command.recipientId(),
           command.goals().getFirst().goalId(),
           command.amount()
         )
-      );
+      ));
     }
     if (
       command.addToGoal() &&
       (command.goals() == null || command.goals().size() == 0)
     ) {
-      goalFacade.run(
+      chain = chain.thenRunAsync(() -> goalFacade.run(
         new CountPaymentInDefaultGoalCommand(
           paymentId,
           command.recipientId(),
           command.amount()
         )
-      );
+      ));
     }
-    CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (command.triggerDonaton()) {
       chain = chain.thenCompose(v ->
         facade.sendEvent(
