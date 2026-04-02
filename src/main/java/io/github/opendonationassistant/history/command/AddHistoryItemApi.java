@@ -1,6 +1,7 @@
 package io.github.opendonationassistant.history.command;
 
 import io.github.opendonationassistant.commons.Amount;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
@@ -27,7 +28,7 @@ public interface AddHistoryItemApi {
     responseCode = "200",
     description = "Successfully created the history item"
   )
-  CompletableFuture<Void> addHistoryItem(
+  CompletableFuture<HttpResponse<Void>> addHistoryItem(
     Authentication auth,
     @Body AddHistoryItemApi.AddHistoryItemCommand command
   );

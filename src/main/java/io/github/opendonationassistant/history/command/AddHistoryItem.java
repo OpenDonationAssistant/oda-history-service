@@ -1,18 +1,31 @@
 package io.github.opendonationassistant.history.command;
 
 import com.fasterxml.uuid.Generators;
+import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
+import io.github.opendonationassistant.events.HasRecipientId;
+import io.github.opendonationassistant.events.goal.GoalFacade;
+import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
+import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInSpecifiedGoalCommand;
+import io.github.opendonationassistant.events.history.HistoryFacade;
+import io.github.opendonationassistant.events.history.HistoryFacade.HistoryMessagingClient;
+import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
+import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHistoryItemCommand.AlertMedia;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
+import io.micronaut.serde.ObjectMapper;
+import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
 
 @Controller
 public class AddHistoryItem
@@ -21,23 +34,39 @@ public class AddHistoryItem
 
   private final HistoryItemRepository repository;
   private final ODALogger log = new ODALogger(this);
+  private final HistoryMessagingClient messaging;
+  private final HistoryFacade facade;
+  private final ObjectMapper mapper;
+  private final GoalFacade goalFacade;
 
   @Inject
-  public AddHistoryItem(HistoryItemRepository repository) {
+  public AddHistoryItem(
+    HistoryItemRepository repository,
+    HistoryMessagingClient messaging,
+    HistoryFacade facade,
+    GoalFacade goalFacade,
+    ObjectMapper mapper
+  ) {
     this.repository = repository;
+    this.messaging = messaging;
+    this.facade = facade;
+    this.mapper = mapper;
+    this.goalFacade = goalFacade;
   }
 
   @Override
-  public CompletableFuture<Void> addHistoryItem(
+  public CompletableFuture<HttpResponse<Void>> addHistoryItem(
     Authentication auth,
     AddHistoryItemApi.AddHistoryItemCommand command
   ) {
-    log.debug("AddHistoryItemCommand Authentication", Map.of("auth", auth));
     var recipientId = getOwnerId(auth);
     if (recipientId.isEmpty()) {
-      return CompletableFuture.completedFuture(null);
+      return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
-    var created = new HistoryItemData(
+    if (command.paymentId() == null) {
+      return CompletableFuture.completedFuture(HttpResponse.badRequest());
+    }
+    var data = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
       "payment",
       command.recipientId(),
@@ -56,6 +85,145 @@ public class AddHistoryItem
       null, // votes
       List.of()
     );
-    return CompletableFuture.runAsync(() -> repository.create(created));
+    if (
+      command.addToGoal() &&
+      command.goals() != null &&
+      command.goals().size() > 0
+    ) {
+      goalFacade.run(
+        new CountPaymentInSpecifiedGoalCommand(
+          command.paymentId(),
+          command.recipientId(),
+          command.goals().getFirst().goalId(),
+          command.amount()
+        )
+      );
+    }
+    if (
+      command.addToGoal() &&
+      (command.goals() == null || command.goals().size() == 0)
+    ) {
+      goalFacade.run(
+        new CountPaymentInDefaultGoalCommand(
+          command.paymentId(),
+          command.recipientId(),
+          command.amount()
+        )
+      );
+    }
+    if (command.triggerDonaton()) {
+      facade.sendEvent(
+        new ChangeDonatonCommand(
+          command.recipientId(),
+          command.amount(),
+          command.paymentId()
+        )
+      );
+    }
+    if (command.triggerAlert()) {
+      facade.sendEvent(
+        new CreateAlertCommand(
+          command.paymentId(),
+          command.recipientId(),
+          command.nickname(),
+          command.message(),
+          command.amount(),
+          Optional.ofNullable(command.alertMedia())
+            .map(AlertMedia::url)
+            .orElse(null)
+        )
+      );
+    }
+    if (command.triggerReel()) {
+      facade.sendEvent(
+        new LinkReelCommand(
+          command.recipientId(),
+          command.paymentId(),
+          command.amount()
+        )
+      );
+    }
+    return CompletableFuture.runAsync(() -> repository.create(data))
+      .thenCompose(v ->
+        command.addToTop()
+          ? sendEvent(
+            new HistoryItemEvent(
+              data.id(),
+              data.type(),
+              data.recipientId(),
+              data.system(),
+              data.originId(),
+              data.timestamp(),
+              data.nickname(),
+              data.amount(),
+              data.message(),
+              data.goals().stream().map(it -> it.goalId()).toList(),
+              data
+                .actions()
+                .stream()
+                .map(it ->
+                  new HistoryItemEvent.ActionRequest(
+                    it.id(),
+                    it.actionId(),
+                    it.name(),
+                    it.amount(),
+                    it.payload()
+                  )
+                )
+                .toList(),
+              Optional.ofNullable(data.vote())
+                .map(it ->
+                  new HistoryItemEvent.Vote(it.id(), it.name(), it.isNew())
+                )
+                .orElse(null)
+            )
+          )
+          : CompletableFuture.completedFuture(null)
+      )
+      .thenApply(v -> HttpResponse.ok());
   }
+
+  public CompletableFuture<Void> sendEvent(HasRecipientId payload) {
+    this.log.info("Send HistoryEvent", Map.of("payload", payload));
+    String type = payload.getClass().getSimpleName();
+
+    try {
+      return this.messaging.sendEvent(
+          "recipient",
+          type,
+          payload.recipientId(),
+          this.mapper.writeValueAsBytes(payload)
+        );
+    } catch (Exception var4) {
+      this.log.error("Serialization error", Map.of("error", var4.getMessage()));
+      throw new RuntimeException(var4);
+    }
+  }
+
+  @Serdeable
+  public static record LinkReelCommand(
+    String recipientId,
+    String paymentId,
+    Amount amount
+  )
+    implements HasRecipientId {}
+
+  @Serdeable
+  public static record ChangeDonatonCommand(
+    String recipientId,
+    Amount change,
+    String paymentId
+  )
+    implements HasRecipientId {}
+
+  @Serdeable
+  public static record CreateAlertCommand(
+    String paymentId,
+    String recipientId,
+    String nickname,
+    String message,
+    Amount amount,
+    @Nullable String url
+  )
+    implements HasRecipientId {}
 }
