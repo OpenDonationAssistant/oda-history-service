@@ -75,6 +75,9 @@ public class AddHistoryItem
     if (paymentId == null) {
       return CompletableFuture.completedFuture(HttpResponse.badRequest());
     }
+    if (repository.findByOriginId(paymentId).isPresent()){
+      return CompletableFuture.completedFuture(HttpResponse.ok());
+    }
     var data = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
       "payment",
