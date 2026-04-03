@@ -43,9 +43,13 @@ public class Application {
         Exchange.Exchange("twitch", Map.of("*", events)),
         Exchange.Exchange(
           "history",
-          Map.of("event.ReelResultHistoryEvent", events)
+          Map.of(
+            "event.ReelResultHistoryEvent", events,
+            "event.GoalHistoryEvent", events,
+            "event.MediaHistoryEvent", events,
+            "command", commands
+            )
         ),
-        Exchange.Exchange("history", Map.of("command", commands)),
         Exchange.Exchange(
           "donaton",
           Map.of("event.DonatonDeadlineChanged", events)
@@ -53,8 +57,7 @@ public class Application {
         Exchange.Exchange(
           "actions",
           Map.of("event.ActionHistoryEvent", events)
-        ),
-        Exchange.Exchange("history", Map.of("event.MediaHistoryEvent", events))
+        )
       )
     );
   }
