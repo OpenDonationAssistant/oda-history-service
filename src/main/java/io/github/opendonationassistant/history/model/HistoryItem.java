@@ -1,5 +1,6 @@
 package io.github.opendonationassistant.history.model;
 
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemData.Attachment;
 import io.github.opendonationassistant.history.repository.HistoryItemData.ReelResult;
@@ -8,10 +9,12 @@ import io.github.opendonationassistant.history.repository.HistoryItemDataReposit
 import io.micronaut.serde.annotation.Serdeable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Serdeable
 public class HistoryItem {
 
+  private ODALogger log = new ODALogger(this);
   private HistoryItemData data;
   private HistoryItemDataRepository repository;
 
@@ -56,6 +59,8 @@ public class HistoryItem {
   }
 
   public void save() {
+    log.info("Updating history item", Map.of("data", data));
     repository.update(data);
   }
+
 }
