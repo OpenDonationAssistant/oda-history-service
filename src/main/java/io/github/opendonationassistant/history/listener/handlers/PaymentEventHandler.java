@@ -90,7 +90,7 @@ public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
   }
 
   public CompletableFuture<Void> sendEvent(HasRecipientId payload) {
-    this.log.info("Send HistoryEvent", Map.of("payload", payload));
+    this.log.info("Send HistoryEvent to recipient", Map.of("payload", payload));
     String type = payload.getClass().getSimpleName();
 
     try {

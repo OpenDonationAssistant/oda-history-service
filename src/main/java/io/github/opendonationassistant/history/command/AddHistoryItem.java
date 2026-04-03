@@ -55,6 +55,14 @@ public class AddHistoryItem
   }
 
   @Override
+  public CompletableFuture<HttpResponse<Void>> oldAddHistoryItem(
+    Authentication auth,
+    AddHistoryItemCommand command
+  ) {
+    return addHistoryItem(auth, command);
+  }
+
+  @Override
   public CompletableFuture<HttpResponse<Void>> addHistoryItem(
     Authentication auth,
     AddHistoryItemApi.AddHistoryItemCommand command
@@ -92,26 +100,30 @@ public class AddHistoryItem
       command.goals() != null &&
       command.goals().size() > 0
     ) {
-      chain = chain.thenRunAsync(() -> goalFacade.run(
-        new CountPaymentInSpecifiedGoalCommand(
-          paymentId,
-          command.recipientId(),
-          command.goals().getFirst().goalId(),
-          command.amount()
+      chain = chain.thenRunAsync(() ->
+        goalFacade.run(
+          new CountPaymentInSpecifiedGoalCommand(
+            paymentId,
+            command.recipientId(),
+            command.goals().getFirst().goalId(),
+            command.amount()
+          )
         )
-      ));
+      );
     }
     if (
       command.addToGoal() &&
       (command.goals() == null || command.goals().size() == 0)
     ) {
-      chain = chain.thenRunAsync(() -> goalFacade.run(
-        new CountPaymentInDefaultGoalCommand(
-          paymentId,
-          command.recipientId(),
-          command.amount()
+      chain = chain.thenRunAsync(() ->
+        goalFacade.run(
+          new CountPaymentInDefaultGoalCommand(
+            paymentId,
+            command.recipientId(),
+            command.amount()
+          )
         )
-      ));
+      );
     }
     if (command.triggerDonaton()) {
       chain = chain.thenCompose(v ->
