@@ -3,5 +3,4 @@ datasources:
     db-type: "postgresql"
 logger:
   levels:
-    io.micronaut.http.client: TRACE
     io.github.opendonationassistant: DEBUG

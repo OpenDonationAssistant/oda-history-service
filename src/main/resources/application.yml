@@ -34,7 +34,5 @@ flyway:
     default:
       enabled: true
       baseline-on-migrate: true
-jpa:
-  default:
-    entity-scan:
-      packages: "io.github.opendonationassistant"
+      schemas: 'history'
+      default-schema: 'history'
