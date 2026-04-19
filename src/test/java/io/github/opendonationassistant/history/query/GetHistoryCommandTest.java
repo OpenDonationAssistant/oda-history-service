@@ -65,7 +65,7 @@ public class GetHistoryCommandTest {
     Pageable page = Pageable.from(0, 10);
 
     Page<HistoryItemData> results = getHistory
-      .getHistory(
+      .deprecatedGetHistory(
         AuthenticationGenerator.forUser(recipientId),
         page,
         new GetHistory.GetHistoryCommand(List.of())
@@ -107,7 +107,7 @@ public class GetHistoryCommandTest {
     final Authentication auth = AuthenticationGenerator.forUser(recipientId);
     // prettier-ignore ON
     Function<GetHistory.GetHistoryCommand,Page<HistoryItemData>> getHistoryPage = command ->
-      getHistory.getHistory(auth, page, command).getBody().get();
+      getHistory.deprecatedGetHistory(auth, page, command).getBody().get();
     // prettier-ignore OFF
 
     assertSame(

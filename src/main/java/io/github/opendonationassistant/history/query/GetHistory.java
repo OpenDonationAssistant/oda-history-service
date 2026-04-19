@@ -1,17 +1,24 @@
 package io.github.opendonationassistant.history.query;
 
+import static io.micronaut.data.repository.jpa.criteria.PredicateSpecification.*;
+
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.history.model.HistoryItem;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import org.jspecify.annotations.Nullable;
 
 @Controller
 public class GetHistory extends BaseController implements GetHistoryApi {
@@ -24,7 +31,7 @@ public class GetHistory extends BaseController implements GetHistoryApi {
   }
 
   @Override
-  public HttpResponse<Page<HistoryItemData>> getHistory(
+  public HttpResponse<Page<HistoryItemData>> deprecatedGetHistory(
     Authentication auth,
     Pageable pageable,
     @Body GetHistoryApi.GetHistoryCommand command
@@ -48,5 +55,36 @@ public class GetHistory extends BaseController implements GetHistoryApi {
         )
         .map(HistoryItem::data)
     );
+  }
+
+  @Override
+  public CompletableFuture<HttpResponse<Page<HistoryItemData>>> getHistory(
+    Authentication auth,
+    Pageable pageable,
+    @Nullable List<String> systems,
+    @Nullable List<String> events
+  ) {
+    var recipientId = getOwnerId(auth);
+    if (recipientId.isEmpty()) {
+      return CompletableFuture.completedFuture(HttpResponse.unauthorized());
+    }
+    final ArrayList<PredicateSpecification<HistoryItemData>> conditions =
+      new ArrayList<>();
+    conditions.add(
+      where((root, builder) ->
+        builder.equal(root.get("recipientId"), recipientId.get())
+      )
+    );
+    if (systems != null && systems.size() > 0) {
+      conditions.add(where((root, builder) -> root.get("system").in(systems)));
+    }
+    if (events != null && events.size() > 0) {
+      conditions.add(where((root, builder) -> root.get("type").in(events)));
+    }
+    return CompletableFuture.supplyAsync(() -> {
+      return HttpResponse.ok(
+        repository.findAll(conditions, pageable).map(HistoryItem::data)
+      );
+    });
   }
 }

@@ -5,10 +5,13 @@ import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
 import io.github.opendonationassistant.history.model.HistoryItem;
 import io.micronaut.context.annotation.Mapper;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -100,6 +103,25 @@ public class HistoryItemRepository {
 
   public Optional<HistoryItem> findByOriginId(String originId) {
     return repository.findByOriginId(originId).map(this::convert);
+  }
+
+  public @NonNull Page<HistoryItem> findAll(
+    List<PredicateSpecification<HistoryItemData>> predicates,
+    Pageable pageable
+  ) {
+    return repository
+      .findAll(
+        (root, builder) -> {
+          return builder.and(
+            predicates
+              .stream()
+              .map(it -> it.toPredicate(root, builder))
+              .toArray(Predicate[]::new)
+          );
+        },
+        pageable
+      )
+      .map(this::convert);
   }
 
   private HistoryItem convert(HistoryItemData data) {
