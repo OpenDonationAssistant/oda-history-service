@@ -54,7 +54,8 @@ public record HistoryItemData(
   @Schema(description = "Alerts shown to the streamer")
   List<Alert> alerts,
   @Nullable @MappedProperty("level") Integer level,
-  @Nullable @MappedProperty("count") Integer count
+  @Nullable @MappedProperty("count") Integer count,
+  @Nullable @MappedProperty("level_name") String levelName
 )
   implements HistoryItemDataWither {
   @Serdeable

@@ -97,7 +97,8 @@ public class AddHistoryItem
       null, // votes
       List.of(),
       command.level(),
-      command.count()
+      command.count(),
+      command.levelName()
     );
     CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (

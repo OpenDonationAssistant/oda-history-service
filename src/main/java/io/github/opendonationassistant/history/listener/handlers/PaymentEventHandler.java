@@ -56,6 +56,7 @@ public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
       null, // vote
       List.of(),
       null,
+      null,
       null
     );
     repository.create(data);
