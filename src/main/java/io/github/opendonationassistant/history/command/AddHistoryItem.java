@@ -95,7 +95,9 @@ public class AddHistoryItem
       List.of(), // reelResults
       List.of(), // actions
       null, // votes
-      List.of()
+      List.of(),
+      command.level(),
+      command.count()
     );
     CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (

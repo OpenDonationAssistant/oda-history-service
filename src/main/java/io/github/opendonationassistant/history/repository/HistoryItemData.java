@@ -19,24 +19,44 @@ import java.util.Map;
 @Schema(description = "History item representing a donation or event")
 public record HistoryItemData(
   @Id @Schema(description = "Unique identifier of the history item") String id,
-  @MappedProperty("event_type") @Schema(description = "Type of event (e.g., payment, goal)") String type,
+  @MappedProperty("event_type")
+  @Schema(description = "Type of event (e.g., payment, goal)")
+  String type,
   @Schema(description = "Recipient ID (streamer/creator)") String recipientId,
-  @Schema(description = "Source system (e.g., donate.stream, donatello)") String system,
-  @Nullable @Schema(description = "Original ID from the source system") String originId,
+  @Schema(description = "Source system (e.g., donate.stream, donatello)")
+  String system,
+  @Nullable
+  @Schema(description = "Original ID from the source system")
+  String originId,
   @MappedProperty(type = DataType.TIMESTAMP, value = "event_timestamp")
-  @Schema(description = "Timestamp of the event") Instant timestamp,
+  @Schema(description = "Timestamp of the event")
+  Instant timestamp,
   @Nullable @Schema(description = "Donor's nickname") String nickname,
   @Nullable @Schema(description = "Donation amount") Amount amount,
   @Nullable @Schema(description = "Message from the donor") String message,
-  @MappedProperty(type = DataType.JSON) @Schema(description = "Attached media files") List<Attachment> attachments,
-  @MappedProperty(type = DataType.JSON) @Schema(description = "Target goals associated with the donation") List<TargetGoal> goals,
-  @MappedProperty(type = DataType.JSON) @Schema(description = "Reel results from Instagram/Facebook") List<ReelResult> reelResults,
-  @MappedProperty(type = DataType.JSON) @Schema(description = "Action requests triggered by the donation") List<ActionRequest> actions,
-  @MappedProperty(type = DataType.JSON) @Nullable @Schema(description = "Vote associated with the donation") Vote vote,
-  @MappedProperty(type = DataType.JSON) @Schema(description = "Alerts shown to the streamer") List<Alert> alerts
+  @MappedProperty(type = DataType.JSON)
+  @Schema(description = "Attached media files")
+  List<Attachment> attachments,
+  @MappedProperty(type = DataType.JSON)
+  @Schema(description = "Target goals associated with the donation")
+  List<TargetGoal> goals,
+  @MappedProperty(type = DataType.JSON)
+  @Schema(description = "Reel results from Instagram/Facebook")
+  List<ReelResult> reelResults,
+  @MappedProperty(type = DataType.JSON)
+  @Schema(description = "Action requests triggered by the donation")
+  List<ActionRequest> actions,
+  @MappedProperty(type = DataType.JSON)
+  @Nullable
+  @Schema(description = "Vote associated with the donation")
+  Vote vote,
+  @MappedProperty(type = DataType.JSON)
+  @Schema(description = "Alerts shown to the streamer")
+  List<Alert> alerts,
+  @Nullable @MappedProperty("level") Integer level,
+  @Nullable @MappedProperty("count") Integer count
 )
   implements HistoryItemDataWither {
-
   @Serdeable
   @Schema(description = "Media attachment")
   public record Attachment(
@@ -48,7 +68,9 @@ public record HistoryItemData(
 
   @Serdeable
   @Schema(description = "Reel result from social media")
-  public record ReelResult(@Schema(description = "Title of the reel") String title) {}
+  public record ReelResult(
+    @Schema(description = "Title of the reel") String title
+  ) {}
 
   @Serdeable
   @Schema(description = "Target goal")

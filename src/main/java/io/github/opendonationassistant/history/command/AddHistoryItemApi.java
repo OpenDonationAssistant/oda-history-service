@@ -76,6 +76,8 @@ public interface AddHistoryItemApi {
     @Nullable @Schema(description = "Alert media URL") AlertMedia alertMedia,
     @Nullable @Schema(description = "Vote information") Vote vote,
     @Schema(description = "Event type") String event,
+    @Nullable @Schema(description = "Related item count") Integer count,
+    @Nullable @Schema(description = "Boosty subscription level") Integer level,
     @Schema(description = "Whether to trigger an alert") boolean triggerAlert,
     @Schema(description = "Whether to trigger a reel") boolean triggerReel,
     @Schema(

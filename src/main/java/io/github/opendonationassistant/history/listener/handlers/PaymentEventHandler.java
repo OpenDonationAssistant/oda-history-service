@@ -54,7 +54,9 @@ public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
       List.of(), //reelResults
       List.of(), //actions
       null, // vote
-      List.of()
+      List.of(),
+      null,
+      null
     );
     repository.create(data);
     sendEvent(
