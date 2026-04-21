@@ -80,7 +80,7 @@ public class AddHistoryItem
     }
     var data = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
-      command.event(),
+      Optional.ofNullable(command.event()).orElse("payment"),
       command.recipientId(),
       command.system(),
       command.paymentId(),
