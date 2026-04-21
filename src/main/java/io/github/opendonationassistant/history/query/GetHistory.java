@@ -8,6 +8,8 @@ import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
+import io.micronaut.data.model.Sort.Order;
 import io.micronaut.data.repository.jpa.criteria.PredicateSpecification;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
@@ -83,7 +85,7 @@ public class GetHistory extends BaseController implements GetHistoryApi {
     }
     return CompletableFuture.supplyAsync(() -> {
       return HttpResponse.ok(
-        repository.findAll(conditions, pageable).map(HistoryItem::data)
+        repository.findAll(conditions, pageable.withSort(Sort.of(Order.desc("timestamp")))).map(HistoryItem::data)
       );
     });
   }
