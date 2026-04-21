@@ -153,7 +153,11 @@ public class AddHistoryItem
             command.amount(),
             Optional.ofNullable(command.alertMedia())
               .map(AlertMedia::url)
-              .orElse(null)
+              .orElse(null),
+            command.system(),
+            command.event(),
+            command.count(),
+            command.levelName()
           )
         )
       );
@@ -242,7 +246,7 @@ public class AddHistoryItem
     String paymentId
   )
     implements HasRecipientId {}
-
+  
   @Serdeable
   public static record CreateAlertCommand(
     String paymentId,
@@ -250,7 +254,12 @@ public class AddHistoryItem
     String nickname,
     String message,
     Amount amount,
-    @Nullable String url
+    @Nullable String url,
+    String system,
+    String event,
+    @Nullable Integer count,
+    @Nullable String levelName
   )
     implements HasRecipientId {}
+
 }
