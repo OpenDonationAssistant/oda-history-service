@@ -10,6 +10,7 @@ import io.micronaut.context.ApplicationContextConfigurer;
 import io.micronaut.context.annotation.ContextConfigurer;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.rabbitmq.connect.ChannelInitializer;
+import io.micronaut.rabbitmq.connect.ChannelPool;
 import io.micronaut.runtime.Micronaut;
 import io.micronaut.serde.ObjectMapper;
 import io.swagger.v3.oas.annotations.*;
@@ -43,7 +44,10 @@ public class Application {
     var commands = new Queue("history.command");
     return new AMQPConfiguration(
       List.of(
-        Exchange.Exchange("commands", Map.of("AddHistoryItem", commands)),
+        Exchange.Exchange(
+          "commands",
+          Map.of("commands.AddHistoryItemCommand", commands)
+        ),
         Exchange.Exchange("payments", Map.of("event.PaymentEvent", events)),
         Exchange.Exchange("twitch", Map.of("*", events)),
         Exchange.Exchange(
@@ -70,13 +74,13 @@ public class Application {
 
   @Singleton
   @Named("automation")
-  public RabbitClient automationFacade(Channel channel, ObjectMapper mapper) {
-    return new RabbitClient(channel, mapper, "automation");
+  public RabbitClient automationFacade(ChannelPool pool, ObjectMapper mapper) {
+    return new RabbitClient(pool, mapper, "automation");
   }
 
   @Singleton
   @Named("commands")
-  public RabbitClient commandsFacade(Channel channel, ObjectMapper mapper) {
-    return new RabbitClient(channel, mapper, "commands");
+  public RabbitClient commandsFacade(ChannelPool pool, ObjectMapper mapper) {
+    return new RabbitClient(pool, mapper, "commands");
   }
 }
