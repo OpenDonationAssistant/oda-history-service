@@ -7,7 +7,7 @@ import io.micronaut.rabbitmq.annotation.RabbitListener;
 import io.micronaut.rabbitmq.bind.RabbitAcknowledgement;
 import jakarta.inject.Inject;
 
-@RabbitListener
+@RabbitListener(executor = "command-listener")
 public class CommandListener {
 
   private MessageProcessor processor;

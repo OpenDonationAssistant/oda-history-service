@@ -18,7 +18,10 @@ micronaut:
     jwks:
       expire-after-write: 240h
   executors:
-    history-command-listener:
+    command-listener:
+      type: fixed
+      nThreads: 1
+    event-listener:
       type: fixed
       nThreads: 1
 endpoints:

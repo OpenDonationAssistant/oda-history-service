@@ -50,7 +50,7 @@ public interface AddHistoryItemApi {
 
   @Serdeable
   @Schema(description = "Command to add a new history item")
-  record AddHistoryItemCommand(
+  public record AddHistoryItemCommand(
     @Nullable @Schema(
       description = "Payment ID from the source system"
     ) String paymentId,
@@ -89,17 +89,17 @@ public interface AddHistoryItemApi {
   ) {
     @Serdeable
     @Schema(description = "Media attachment")
-    record Attachment(@Schema(description = "Attachment ID") String id) {}
+    public record Attachment(@Schema(description = "Attachment ID") String id) {}
 
     @Serdeable
     @Schema(description = "Reel result from social media")
-    record ReelResult(
+    public record ReelResult(
       @Schema(description = "Title of the reel") String title
     ) {}
 
     @Serdeable
     @Schema(description = "Target goal")
-    record TargetGoal(
+    public record TargetGoal(
       @Schema(description = "Goal ID") String goalId,
       @Schema(description = "Goal title") String goalTitle
     ) {}
@@ -116,11 +116,11 @@ public interface AddHistoryItemApi {
 
     @Serdeable
     @Schema(description = "Alert media")
-    record AlertMedia(@Schema(description = "Alert media URL") String url) {}
+    public record AlertMedia(@Schema(description = "Alert media URL") String url) {}
 
     @Serdeable
     @Schema(description = "Vote information")
-    record Vote(
+    public record Vote(
       @Nullable @Schema(description = "Vote ID") String id,
       @Schema(description = "Vote name") String name,
       @Schema(description = "Is this a new vote?") Boolean isNew

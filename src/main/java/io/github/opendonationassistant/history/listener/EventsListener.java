@@ -8,7 +8,7 @@ import io.micronaut.rabbitmq.bind.RabbitAcknowledgement;
 import jakarta.inject.Inject;
 import java.io.IOException;
 
-@RabbitListener
+@RabbitListener(executor = "event-listener")
 public class EventsListener {
 
   private final MessageProcessor processor;

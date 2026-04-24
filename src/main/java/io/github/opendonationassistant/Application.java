@@ -43,6 +43,7 @@ public class Application {
     var commands = new Queue("history.command");
     return new AMQPConfiguration(
       List.of(
+        Exchange.Exchange("commands", Map.of("AddHistoryItem", commands)),
         Exchange.Exchange("payments", Map.of("event.PaymentEvent", events)),
         Exchange.Exchange("twitch", Map.of("*", events)),
         Exchange.Exchange(
@@ -71,5 +72,11 @@ public class Application {
   @Named("automation")
   public RabbitClient automationFacade(Channel channel, ObjectMapper mapper) {
     return new RabbitClient(channel, mapper, "automation");
+  }
+
+  @Singleton
+  @Named("commands")
+  public RabbitClient commandsFacade(Channel channel, ObjectMapper mapper) {
+    return new RabbitClient(channel, mapper, "commands");
   }
 }
