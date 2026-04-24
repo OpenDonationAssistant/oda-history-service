@@ -46,7 +46,7 @@ public class Application {
       List.of(
         Exchange.Exchange(
           "commands",
-          Map.of("commands.AddHistoryItemCommand", commands)
+          Map.of("command.AddHistoryItemCommand", commands)
         ),
         Exchange.Exchange("payments", Map.of("event.PaymentEvent", events)),
         Exchange.Exchange("twitch", Map.of("*", events)),
