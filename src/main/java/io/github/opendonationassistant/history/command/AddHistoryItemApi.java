@@ -36,6 +36,7 @@ public interface AddHistoryItemApi {
   @Post("/history/add")
   @Secured(SecurityRule.IS_AUTHENTICATED)
   @Operation(
+    hidden = true,
     summary = "Add a new history item",
     description = "Creates a new donation history item for the authenticated user"
   )
@@ -66,6 +67,7 @@ public interface AddHistoryItemApi {
       description = "External ID from the source system"
     ) String externalId,
     @Schema(description = "Attached media files") List<Attachment> attachments,
+    @Schema(description = "Attached media links") List<String> links,
     @Schema(description = "Target goals") List<TargetGoal> goals,
     @Schema(description = "Reel results from social media") List<
       ReelResult
