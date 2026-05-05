@@ -1,6 +1,6 @@
 package io.github.opendonationassistant;
 
-import com.rabbitmq.client.Channel;
+import io.github.opendonationassistant.history.model.Printer.PrintableData;
 import io.github.opendonationassistant.rabbit.AMQPConfiguration;
 import io.github.opendonationassistant.rabbit.Exchange;
 import io.github.opendonationassistant.rabbit.Queue;
@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.info.*;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,12 @@ public class Application {
       List.of(
         Exchange.Exchange(
           "commands",
-          Map.of("command.AddHistoryItemCommand", commands)
+          Map.of(
+            "command.AddHistoryItemCommand",
+            commands,
+            "command.PrintHistoryCommand",
+            commands
+          )
         ),
         Exchange.Exchange("payments", Map.of("event.PaymentEvent", events)),
         Exchange.Exchange("twitch", Map.of("*", events)),
@@ -82,5 +88,10 @@ public class Application {
   @Named("commands")
   public RabbitClient commandsFacade(ChannelPool pool, ObjectMapper mapper) {
     return new RabbitClient(pool, mapper, "commands");
+  }
+
+  @Singleton
+  public Map<String, PrintableData> printableData() {
+    return new HashMap<>();
   }
 }

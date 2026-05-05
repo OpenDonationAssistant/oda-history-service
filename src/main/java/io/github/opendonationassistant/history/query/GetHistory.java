@@ -14,6 +14,7 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Inject;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,9 @@ public class GetHistory extends BaseController implements GetHistoryApi {
     Authentication auth,
     Pageable pageable,
     @Nullable List<String> systems,
-    @Nullable List<String> events
+    @Nullable List<String> events,
+    @Nullable Instant after,
+    @Nullable Instant before
   ) {
     var recipientId = getOwnerId(auth);
     if (recipientId.isEmpty()) {
@@ -80,6 +83,19 @@ public class GetHistory extends BaseController implements GetHistoryApi {
     }
     if (events != null && events.size() > 0) {
       conditions.add(where((root, builder) -> root.get("type").in(events)));
+    }
+    if (after != null) {
+      conditions.add(
+        where((root, builder) ->
+          builder.greaterThan(root.get("timestamp"), after)
+        )
+      );
+    }
+    if (before != null) {
+      conditions.add(
+        where((root, builder) -> builder.lessThan(root.get("timestamp"), before)
+        )
+      );
     }
     return CompletableFuture.supplyAsync(() -> {
       return HttpResponse.ok(

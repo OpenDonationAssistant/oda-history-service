@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.jspecify.annotations.Nullable;
@@ -98,7 +100,9 @@ public interface GetHistoryApi {
     Authentication auth,
     @Parameter(hidden = true) Pageable pageable,
     @Nullable @QueryValue(value = "systems") List<String> systems,
-    @Nullable @QueryValue(value = "events") List<String> events
+    @Nullable @QueryValue(value = "events") List<String> events,
+    @Nullable @QueryValue(value = "after") Instant after,
+    @Nullable @QueryValue(value = "before") Instant before
   );
 
   @Serdeable
