@@ -46,7 +46,6 @@ public class PrinterTest {
     final String result = printer.print(
       new Printer.PrintableData("testuser", List.of(data))
     );
-    log.info(result, Map.of());
     assertEquals(
       "Event;System;Timestamp;Nickname;Amount;Message;Goal;Roulette;Actions;LevelName;ItemCount;\ntype;system;2022-01-01T00:00:00Z;\"nickname\";100.0;\"message\";\"\";\"\";\"\";\"levelName\";2;\n",
       result
