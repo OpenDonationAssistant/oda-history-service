@@ -48,7 +48,7 @@ public class PrinterTest {
     );
     log.info(result, Map.of());
     assertEquals(
-      "Event;System;Timestamp;Nickname;Amount;Message;Goal;Roulette;Actions;LevelName;ItemCount;\ntype;system;2022-01-01T00:00:00Z;nickname;100.0;message;;;;levelName;2;\n",
+      "Event;System;Timestamp;Nickname;Amount;Message;Goal;Roulette;Actions;LevelName;ItemCount;\ntype;system;2022-01-01T00:00:00Z;\"nickname\";100.0;\"message\";\"\";\"\";\"\";\"levelName\";2;\n",
       result
     );
   }

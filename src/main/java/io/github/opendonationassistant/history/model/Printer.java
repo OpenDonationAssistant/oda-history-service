@@ -61,17 +61,17 @@ public class Printer {
           .append(item.system())
           .append(";")
           .append(item.timestamp())
-          .append(";")
+          .append(";\"")
           .append(item.nickname())
-          .append(";")
+          .append("\";")
           .append(
             Optional.ofNullable(item.amount())
               .map(it -> "%s.%s".formatted(it.getMajor(), it.getMinor()))
               .orElse("")
           )
-          .append(";")
+          .append(";\"")
           .append(item.message())
-          .append(";")
+          .append("\";\"")
           .append(
             item
               .goals()
@@ -80,7 +80,7 @@ public class Printer {
               .map(it -> it.goalTitle())
               .orElse("")
           )
-          .append(";")
+          .append("\";\"")
           .append(
             item
               .reelResults()
@@ -89,7 +89,7 @@ public class Printer {
               .map(it -> it.title())
               .orElse("")
           )
-          .append(";")
+          .append("\";\"")
           .append(
             item
               .actions()
@@ -97,9 +97,9 @@ public class Printer {
               .map(it -> it.name())
               .reduce("", (a, b) -> a + "," + b)
           )
-          .append(";")
+          .append("\";\"")
           .append(Optional.ofNullable(item.levelName()).orElse(""))
-          .append(";")
+          .append("\";")
           .append(
             Optional.ofNullable(item.count())
               .map(it -> it.toString())
