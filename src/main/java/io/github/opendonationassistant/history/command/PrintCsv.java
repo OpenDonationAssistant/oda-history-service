@@ -51,17 +51,18 @@ public class PrintCsv extends BaseController {
       return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
     return CompletableFuture.supplyAsync(() -> {
+      final String id = UUID.randomUUID().toString();
       commandsFacade.sendCommand(
         new PrintHistoryHandler.PrintHistoryCommand(
           ownerId.get(),
-          UUID.randomUUID().toString(),
+          id,
           command.systems(),
           command.events(),
           command.after(),
           command.before()
         )
       );
-      return HttpResponse.ok();
+      return HttpResponse.ok(new PrintCsvResponse(id));
     });
   }
 
