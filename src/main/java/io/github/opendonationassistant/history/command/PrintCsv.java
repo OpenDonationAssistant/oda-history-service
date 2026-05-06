@@ -11,6 +11,9 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.time.Instant;
@@ -30,6 +33,14 @@ public class PrintCsv extends BaseController {
   }
 
   @Post("/history/commands/print-csv")
+  @ApiResponse(
+    responseCode = "200",
+    description = "Successfully ordered the print",
+    content = @Content(
+      mediaType = "application/json",
+      schema = @Schema(implementation = PrintCsvResponse.class)
+    )
+  )
   @Secured(SecurityRule.IS_AUTHENTICATED)
   public CompletableFuture<HttpResponse<PrintCsvResponse>> printCsv(
     Authentication auth,
