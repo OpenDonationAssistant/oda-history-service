@@ -129,6 +129,7 @@ public class Printer {
       bais,
       MediaType.TEXT_CSV_TYPE
     ).attach(filename);
+    map.remove(printId);
     return streamedFile;
   }
 
