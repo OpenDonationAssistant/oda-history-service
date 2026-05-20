@@ -8,12 +8,12 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.concurrent.CompletableFuture;
 
 public interface RepeatAlertApi {
-
   @Post("/history/commands/repeat-alert")
   @Secured(SecurityRule.IS_AUTHENTICATED)
   @Operation(
@@ -22,12 +22,13 @@ public interface RepeatAlertApi {
   )
   @ApiResponse(
     responseCode = "200",
-    description = "Successfully repeated the alert"
+    description = "Successfully repeated the alert",
+    content = @Content(
+      mediaType = "application/json",
+      schema = @Schema(implementation = Void.class)
+    )
   )
-  @ApiResponse(
-    responseCode = "404",
-    description = "History item not found"
-  )
+  @ApiResponse(responseCode = "404", description = "History item not found")
   CompletableFuture<HttpResponse<Void>> repeatAlert(
     Authentication auth,
     @Body RepeatAlertCommand command

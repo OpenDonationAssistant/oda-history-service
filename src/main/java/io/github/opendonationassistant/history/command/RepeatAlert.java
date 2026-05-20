@@ -21,15 +21,15 @@ public class RepeatAlert extends BaseController implements RepeatAlertApi {
 
   private final HistoryItemRepository repository;
   private final ODALogger log = new ODALogger(this);
-  private final RabbitClient automationFacade;
+  private final RabbitClient rabbit;
 
   @Inject
   public RepeatAlert(
     HistoryItemRepository repository,
-    @Named("automation") RabbitClient facade
+    @Named("commands") RabbitClient rabbit
   ) {
     this.repository = repository;
-    this.automationFacade = facade;
+    this.rabbit = rabbit;
   }
 
   @Override
@@ -61,7 +61,7 @@ public class RepeatAlert extends BaseController implements RepeatAlertApi {
     );
 
     return CompletableFuture.supplyAsync(() -> {
-      automationFacade.sendCommand(new RepeatAlertCommand(originId, originId));
+      rabbit.sendCommand(new RepeatAlertCommand(null, originId));
       return HttpResponse.ok();
     });
   }
