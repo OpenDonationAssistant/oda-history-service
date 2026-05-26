@@ -28,6 +28,13 @@ public class TwitchChannelFollowEventHandler
 
   @Override
   public void handle(TwitchChannelFollowEvent event) throws IOException {
+    var alreadyExists = repository
+      .findByOriginId(event.id())
+      .filter(item -> "twitch".equals(item.data().system()))
+      .isPresent();
+    if (alreadyExists) {
+      return;
+    }
     final HistoryItemData data = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
       "follow",
