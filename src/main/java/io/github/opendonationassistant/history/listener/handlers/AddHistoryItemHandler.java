@@ -72,7 +72,7 @@ public class AddHistoryItemHandler
       Optional.ofNullable(command.authorizationTimestamp()).orElseGet(() ->
         Instant.now()
       ),
-      command.nickname(),
+      Optional.ofNullable(command.nickname()).map(it -> it.trim()).orElse(null),
       command.amount(),
       command.message(),
       List.of(), // attachments
