@@ -40,7 +40,8 @@ public class PrinterTest {
       List.of(),
       null,
       2,
-      "levelName"
+      "levelName",
+      false
     );
 
     final String result = printer.print(

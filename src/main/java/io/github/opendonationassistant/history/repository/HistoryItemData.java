@@ -55,7 +55,10 @@ public record HistoryItemData(
   List<Alert> alerts,
   @Nullable @MappedProperty("level") Integer level,
   @Nullable @MappedProperty("count") Integer count,
-  @Nullable @MappedProperty("level_name") String levelName
+  @Nullable @MappedProperty("level_name") String levelName,
+  @MappedProperty("deleted")
+  @Schema(description = "Soft-delete flag for history item")
+  boolean deleted
 )
   implements HistoryItemDataWither {
   @Serdeable

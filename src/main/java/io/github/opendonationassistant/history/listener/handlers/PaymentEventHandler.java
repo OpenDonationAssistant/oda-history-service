@@ -57,7 +57,8 @@ public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
       List.of(),
       null,
       null,
-      null
+      null,
+      false
     );
     repository.create(data);
     sendEvent(

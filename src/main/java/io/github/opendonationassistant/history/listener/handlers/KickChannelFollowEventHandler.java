@@ -56,7 +56,8 @@ public class KickChannelFollowEventHandler
       List.of(),
       null,
       null,
-      null
+      null,
+      false
     );
     repository.create(data);
   }

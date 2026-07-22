@@ -56,7 +56,8 @@ public class VkChannelFollowEventHandler
       List.of(),
       null,
       null,
-      null
+      null,
+      false
     );
     repository.create(data);
   }
