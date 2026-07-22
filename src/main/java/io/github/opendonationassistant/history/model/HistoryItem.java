@@ -58,6 +58,11 @@ public class HistoryItem {
     save();
   }
 
+  public void markDeleted() {
+    data = data.withDeleted(true);
+    save();
+  }
+
   public void save() {
     log.info("Updating history item", Map.of("data", data));
     repository.update(data);
