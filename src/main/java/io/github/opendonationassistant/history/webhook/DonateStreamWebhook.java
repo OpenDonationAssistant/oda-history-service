@@ -86,7 +86,7 @@ public class DonateStreamWebhook {
         null,
         null,
         null,
-        false
+        HistoryItemData.NOT_DELETED
       )
     );
   }

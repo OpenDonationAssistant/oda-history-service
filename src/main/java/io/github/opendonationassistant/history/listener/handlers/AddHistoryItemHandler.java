@@ -84,7 +84,7 @@ public class AddHistoryItemHandler
       command.level(),
       command.count(),
       command.levelName(),
-      false
+      HistoryItemData.NOT_DELETED
     );
     CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (

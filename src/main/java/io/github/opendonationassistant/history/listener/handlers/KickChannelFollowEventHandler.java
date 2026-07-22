@@ -57,7 +57,7 @@ public class KickChannelFollowEventHandler
       null,
       null,
       null,
-      false
+      HistoryItemData.NOT_DELETED
     );
     repository.create(data);
   }

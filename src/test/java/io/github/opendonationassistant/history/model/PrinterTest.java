@@ -41,7 +41,7 @@ public class PrinterTest {
       null,
       2,
       "levelName",
-      false
+      HistoryItemData.NOT_DELETED
     );
 
     final String result = printer.print(

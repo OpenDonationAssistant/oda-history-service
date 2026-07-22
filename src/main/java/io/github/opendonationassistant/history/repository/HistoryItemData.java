@@ -61,6 +61,8 @@ public record HistoryItemData(
   boolean deleted
 )
   implements HistoryItemDataWither {
+
+  public static final boolean NOT_DELETED = false;
   @Serdeable
   @Schema(description = "Media attachment")
   public record Attachment(
