@@ -43,6 +43,7 @@ public class Application {
   public ChannelInitializer rabbitConfiguration() {
     var events = new Queue("history.events");
     var commands = new Queue("history.command");
+    var requests = new Queue("history.get");
     return new AMQPConfiguration(
       List.of(
         Exchange.Exchange(
@@ -66,7 +67,9 @@ public class Application {
             "event.MediaHistoryEvent",
             events,
             "command",
-            commands
+            commands,
+            "get",
+            requests
           )
         ),
         Exchange.Exchange(

@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import org.jspecify.annotations.Nullable;
 
 public interface GetHistoryApi {
+
   @Post("/history/get")
   @Secured(SecurityRule.IS_AUTHENTICATED)
   @Operation(
