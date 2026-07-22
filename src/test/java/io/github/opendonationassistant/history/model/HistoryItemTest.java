@@ -3,6 +3,7 @@ package io.github.opendonationassistant.history.model;
 import static org.instancio.Select.*;
 import static org.mockito.Mockito.*;
 
+import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemData.Attachment;
 import io.github.opendonationassistant.history.repository.HistoryItemDataRepository;
@@ -21,13 +22,14 @@ public class HistoryItemTest {
 
   Model<HistoryItemData> model = Instancio.of(HistoryItemData.class).toModel();
   HistoryItemDataRepository repository = mock(HistoryItemDataRepository.class);
+  HistoryFacade facade = mock(HistoryFacade.class);
 
   @Test
   public void testAddingAttachmentToNewItem(@Given Attachment attachment) {
     var data = Instancio.of(model)
       .set(field(HistoryItemData::attachments), List.of())
       .create();
-    new HistoryItem(repository, data).addMedia(attachment);
+    new HistoryItem(repository, data, facade).addMedia(attachment);
     verify(repository).update(
       argThat(it -> List.of(attachment).equals(it.attachments()))
     );

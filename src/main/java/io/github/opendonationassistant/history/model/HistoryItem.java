@@ -1,6 +1,8 @@
 package io.github.opendonationassistant.history.model;
 
 import io.github.opendonationassistant.commons.logging.ODALogger;
+import io.github.opendonationassistant.events.history.HistoryFacade;
+import io.github.opendonationassistant.events.history.event.DeletedHistoryItem;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemData.Attachment;
 import io.github.opendonationassistant.history.repository.HistoryItemData.ReelResult;
@@ -17,13 +19,16 @@ public class HistoryItem {
   private ODALogger log = new ODALogger(this);
   private HistoryItemData data;
   private HistoryItemDataRepository repository;
+  private HistoryFacade facade;
 
   public HistoryItem(
     HistoryItemDataRepository repository,
-    HistoryItemData data
+    HistoryItemData data,
+    HistoryFacade facade
   ) {
     this.repository = repository;
     this.data = data;
+    this.facade = facade;
   }
 
   public HistoryItemData data() {
@@ -61,6 +66,9 @@ public class HistoryItem {
   public void markDeleted() {
     data = data.withDeleted(true);
     save();
+    facade.sendEvent(
+      new DeletedHistoryItem(data.id(), data.recipientId(), data.system(), data.originId())
+    );
   }
 
   public void save() {

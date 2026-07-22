@@ -125,7 +125,7 @@ public class HistoryItemRepository {
   }
 
   private HistoryItem convert(HistoryItemData data) {
-    return new HistoryItem(repository, data);
+    return new HistoryItem(repository, data, facade);
   }
 
   public static interface HistoryItemDataToEventMapper {
