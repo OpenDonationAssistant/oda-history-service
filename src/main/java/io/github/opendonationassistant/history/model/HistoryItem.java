@@ -36,7 +36,7 @@ public class HistoryItem {
   }
 
   public void addActions(List<HistoryItemData.ActionRequest> actions) {
-    var mergedActions = new ArrayList(data.actions());
+    var mergedActions = new ArrayList<>(data.actions());
     mergedActions.addAll(actions);
     data = data.withActions(mergedActions);
     save();
@@ -67,13 +67,17 @@ public class HistoryItem {
     data = data.withDeleted(true);
     save();
     facade.sendEvent(
-      new DeletedHistoryItem(data.id(), data.recipientId(), data.system(), data.originId())
+      new DeletedHistoryItem(
+        data.id(),
+        data.recipientId(),
+        data.system(),
+        data.originId()
+      )
     );
   }
 
   public void save() {
-    log.info("Updating history item", Map.of("data", data));
-    repository.update(data);
+    log.info("Updating HistoryItemData", Map.of("data", data));
+    repository.save(data);
   }
-
 }
