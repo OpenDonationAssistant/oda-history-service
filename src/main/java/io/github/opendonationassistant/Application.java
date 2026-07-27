@@ -67,16 +67,18 @@ public class Application {
             "event.MediaHistoryEvent",
             events,
             "command",
-            commands,
-            "get",
-            requests
+            commands
           )
         ),
         Exchange.Exchange(
           "donaton",
           Map.of("event.DonatonDeadlineChanged", events)
         ),
-        Exchange.Exchange("actions", Map.of("event.ActionHistoryEvent", events))
+        Exchange.Exchange(
+          "actions",
+          Map.of("event.ActionHistoryEvent", events)
+        ),
+        Exchange.Exchange("rpc", Map.of("GetHistoryRequest", requests))
       )
     );
   }
