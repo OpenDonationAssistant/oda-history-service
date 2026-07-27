@@ -48,7 +48,7 @@ public class GetHistoryCommandTest {
       .set(field(HistoryItemData::actions), List.of())
       .stream()
       .limit(10);
-    shouldNotBeFound.forEach(repository::create);
+    shouldNotBeFound.forEach(it -> repository.create(it).join());
 
     var shouldBeFound = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::recipientId), recipientId)
@@ -60,7 +60,7 @@ public class GetHistoryCommandTest {
       .stream()
       .limit(3)
       .toList();
-    shouldBeFound.forEach(repository::create);
+    shouldBeFound.forEach(it -> repository.create(it).join());
 
     Pageable page = Pageable.from(0, 10);
 
@@ -101,7 +101,7 @@ public class GetHistoryCommandTest {
       donatePayPayment,
       donatestreamPayment
     );
-    allPayments.forEach(repository::create);
+    allPayments.forEach(it -> repository.create(it).join());
 
     final Pageable page = Pageable.from(0, 10);
     final Authentication auth = AuthenticationGenerator.forUser(recipientId);

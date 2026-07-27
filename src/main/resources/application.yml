@@ -4,6 +4,8 @@ micronaut:
       inclusion: ALWAYS
   application:
     name: oda-history-service
+  data:
+    save-assigned-id-fallback-to-update: true
   security:
     authentication: bearer
     token:

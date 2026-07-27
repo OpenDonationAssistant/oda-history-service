@@ -160,7 +160,7 @@ public class AddHistoryItemHandler
       );
     }
     chain
-      .thenRun(() -> repository.create(data))
+      .thenCompose(v -> repository.create(data))
       .thenCompose(v ->
         command.addToTop()
           ? sendEvent(

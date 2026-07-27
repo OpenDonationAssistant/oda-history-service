@@ -30,7 +30,7 @@ public class HistoryItemTest {
       .set(field(HistoryItemData::attachments), List.of())
       .create();
     new HistoryItem(repository, data, facade).addMedia(attachment);
-    verify(repository).update(
+    verify(repository).save(
       argThat(it -> List.of(attachment).equals(it.attachments()))
     );
   }

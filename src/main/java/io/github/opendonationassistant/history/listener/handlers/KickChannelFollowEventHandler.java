@@ -59,7 +59,7 @@ public class KickChannelFollowEventHandler
       null,
       HistoryItemData.NOT_DELETED
     );
-    repository.create(data);
+    repository.create(data).join();
   }
 
   @Serdeable

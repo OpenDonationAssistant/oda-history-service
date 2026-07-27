@@ -59,7 +59,7 @@ public class VkChannelFollowEventHandler
       null,
       HistoryItemData.NOT_DELETED
     );
-    repository.create(data);
+    repository.create(data).join();
   }
 
   @Serdeable

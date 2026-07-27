@@ -14,7 +14,6 @@ public interface HistoryItemDataRepository
   extends
     CrudRepository<HistoryItemData, String>,
     JpaSpecificationExecutor<HistoryItemData> {
-
   public Page<HistoryItemData> findByRecipientIdOrderByTimestampDesc(
     String recipientId,
     Pageable pageable
@@ -26,5 +25,5 @@ public interface HistoryItemDataRepository
     Pageable pageable
   );
 
-  public Optional<HistoryItemData> findByOriginId(String paymentId);
+  public Optional<HistoryItemData> findByOriginId(String originId);
 }

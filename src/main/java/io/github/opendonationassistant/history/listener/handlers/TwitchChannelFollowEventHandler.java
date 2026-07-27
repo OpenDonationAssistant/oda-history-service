@@ -56,6 +56,6 @@ public class TwitchChannelFollowEventHandler
       null,
       HistoryItemData.NOT_DELETED
     );
-    repository.create(data);
+    repository.create(data).join();
   }
 }

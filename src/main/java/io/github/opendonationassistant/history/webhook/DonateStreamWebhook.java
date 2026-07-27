@@ -66,29 +66,31 @@ public class DonateStreamWebhook {
     String recipientId,
     DonateStreamWebhookBody body
   ) {
-    repository.create(
-      new HistoryItemData(
-        Generators.timeBasedEpochGenerator().generate().toString(),
-        "payment",
-        recipientId,
-        "Donate.Stream",
-        body.uid(),
-        Instant.now(),
-        body.nickname(),
-        parseAmount(body.sum()),
-        body.message(),
-        List.of(),
-        List.of(),
-        List.of(),
-        List.of(),
-        null,
-        List.of(),
-        null,
-        null,
-        null,
-        HistoryItemData.NOT_DELETED
+    repository
+      .create(
+        new HistoryItemData(
+          Generators.timeBasedEpochGenerator().generate().toString(),
+          "payment",
+          recipientId,
+          "Donate.Stream",
+          body.uid(),
+          Instant.now(),
+          body.nickname(),
+          parseAmount(body.sum()),
+          body.message(),
+          List.of(),
+          List.of(),
+          List.of(),
+          List.of(),
+          null,
+          List.of(),
+          null,
+          null,
+          null,
+          HistoryItemData.NOT_DELETED
+        )
       )
-    );
+      .join();
   }
 
   private Amount parseAmount(String sum) {
@@ -106,13 +108,17 @@ public class DonateStreamWebhook {
   @Serdeable
   @Schema(
     description = "Donate.Stream webhook payload",
-    requiredProperties = {"type", "uid"}
+    requiredProperties = { "type", "uid" }
   )
   public static record DonateStreamWebhookBody(
-    @Schema(description = "Event type (e.g., 'confirm', 'donation')") String type,
+    @Schema(
+      description = "Event type (e.g., 'confirm', 'donation')"
+    ) String type,
     @Schema(description = "Unique identifier from Donate.Stream") String uid,
     @Schema(description = "Donation message from the donor") String message,
     @Schema(description = "Donor's nickname") String nickname,
-    @Schema(description = "Donation amount as string (e.g., '100.00')") String sum
+    @Schema(
+      description = "Donation amount as string (e.g., '100.00')"
+    ) String sum
   ) {}
 }
