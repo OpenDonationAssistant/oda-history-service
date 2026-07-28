@@ -7,7 +7,6 @@ import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemData.Attachment;
 import io.github.opendonationassistant.history.repository.HistoryItemDataRepository;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import java.util.List;
 import org.instancio.Instancio;
 import org.instancio.Model;
@@ -16,7 +15,6 @@ import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@MicronautTest(environments = "allinone")
 @ExtendWith(InstancioExtension.class)
 public class HistoryItemTest {
 
@@ -26,11 +24,12 @@ public class HistoryItemTest {
 
   @Test
   public void testAddingAttachmentToNewItem(@Given Attachment attachment) {
+    when(repository.existsById(anyString())).thenReturn(true);
     var data = Instancio.of(model)
       .set(field(HistoryItemData::attachments), List.of())
       .create();
     new HistoryItem(repository, data, facade).addMedia(attachment);
-    verify(repository).save(
+    verify(repository).update(
       argThat(it -> List.of(attachment).equals(it.attachments()))
     );
   }

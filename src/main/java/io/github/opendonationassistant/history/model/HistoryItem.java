@@ -78,6 +78,10 @@ public class HistoryItem {
 
   public void save() {
     log.info("Updating HistoryItemData", Map.of("data", data));
-    repository.save(data);
+    if (repository.existsById(data.id())) {
+      repository.update(data);
+    } else {
+      repository.save(data);
+    }
   }
 }
