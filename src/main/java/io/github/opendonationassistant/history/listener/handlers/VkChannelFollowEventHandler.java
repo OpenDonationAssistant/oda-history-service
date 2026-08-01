@@ -33,7 +33,7 @@ public class VkChannelFollowEventHandler
   public void handle(VkChannelFollowEvent event) throws IOException {
     var alreadyExists = repository
       .findByOriginId(event.id())
-      .filter(item -> "vk".equals(item.data().system()))
+      .filter(item -> "VKLive".equals(item.data().system()))
       .isPresent();
     if (alreadyExists) {
       return;
@@ -42,7 +42,7 @@ public class VkChannelFollowEventHandler
       Generators.timeBasedEpochGenerator().generate().toString(),
       "follow",
       event.recipientId(),
-      "vk",
+      "VKLive",
       event.id(),
       event.timestamp(),
       event.username(),
