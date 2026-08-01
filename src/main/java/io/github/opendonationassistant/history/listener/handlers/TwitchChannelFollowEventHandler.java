@@ -39,7 +39,7 @@ public class TwitchChannelFollowEventHandler
       Generators.timeBasedEpochGenerator().generate().toString(),
       "follow",
       event.recipientId(),
-      "twitch",
+      "Twitch",
       event.id(),
       event.timestamp(),
       event.username(),
