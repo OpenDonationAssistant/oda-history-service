@@ -2,23 +2,22 @@ package io.github.opendonationassistant.history.listener.handlers;
 
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.events.AbstractMessageHandler;
-import io.github.opendonationassistant.events.twitch.events.TwitchChannelFollowEvent;
+import io.github.opendonationassistant.events.twitch.events.TwitchUserBannedEvent;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.serde.ObjectMapper;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 @Singleton
-public class TwitchChannelFollowEventHandler
-  extends AbstractMessageHandler<TwitchChannelFollowEvent> {
+public class TwitchUserBannedEventHandler
+  extends AbstractMessageHandler<TwitchUserBannedEvent> {
 
   private final HistoryItemRepository repository;
 
-  @Inject
-  public TwitchChannelFollowEventHandler(
+  public TwitchUserBannedEventHandler(
     ObjectMapper mapper,
     HistoryItemRepository repository
   ) {
@@ -27,7 +26,7 @@ public class TwitchChannelFollowEventHandler
   }
 
   @Override
-  public void handle(TwitchChannelFollowEvent event) throws IOException {
+  public void handle(TwitchUserBannedEvent event) throws IOException {
     var alreadyExists = repository
       .findByOriginId(event.id())
       .filter(item -> "Twitch".equals(item.data().system()))
@@ -37,14 +36,16 @@ public class TwitchChannelFollowEventHandler
     }
     final HistoryItemData data = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
-      "follow",
+      "ban",
       event.recipientId(),
       "Twitch",
       event.id(),
-      event.timestamp(),
-      event.username(),
+      Instant.now(),
+      event.nickname(),
       null,
-      null,
+      event.permanent()
+        ? "Permanent ban for %s".formatted(event.nickname())
+        : "Temporary ban for %s".formatted(event.nickname()),
       List.of(),
       List.of(),
       List.of(),
