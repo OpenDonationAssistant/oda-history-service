@@ -2,26 +2,25 @@ package io.github.opendonationassistant.history.listener.handlers;
 
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.events.AbstractMessageHandler;
+import io.github.opendonationassistant.events.HasRecipientId;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.micronaut.serde.ObjectMapper;
 import io.micronaut.serde.annotation.Serdeable;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
 @Singleton
-public class VkChannelFollowEventHandler
+public class KickKicksGiftedEventHandler
   extends AbstractMessageHandler<
-    VkChannelFollowEventHandler.VkChannelFollowEvent
+    KickKicksGiftedEventHandler.KickKicksGiftedEvent
   > {
 
   private final HistoryItemRepository repository;
 
-  @Inject
-  public VkChannelFollowEventHandler(
+  public KickKicksGiftedEventHandler(
     ObjectMapper mapper,
     HistoryItemRepository repository
   ) {
@@ -30,24 +29,24 @@ public class VkChannelFollowEventHandler
   }
 
   @Override
-  public void handle(VkChannelFollowEvent event) throws IOException {
+  public void handle(KickKicksGiftedEvent event) throws IOException {
     var alreadyExists = repository
       .findByOriginId(event.id())
-      .filter(item -> "VKLive".equals(item.data().system()))
+      .filter(item -> "Kick".equals(item.data().system()))
       .isPresent();
     if (alreadyExists) {
       return;
     }
     final HistoryItemData data = new HistoryItemData(
       Generators.timeBasedEpochGenerator().generate().toString(),
-      "follow",
+      "kick-gift",
       event.recipientId(),
-      "VKLive",
+      "Kick",
       event.id(),
-      event.timestamp(),
-      event.username(),
+      event.createdAt(),
+      event.senderUsername(),
       null,
-      null,
+      event.giftName() + " " + event.giftType() + " " + event.giftTier(),
       List.of(),
       List.of(),
       List.of(),
@@ -55,7 +54,7 @@ public class VkChannelFollowEventHandler
       null,
       List.of(),
       null,
-      null,
+      event.amount(),
       null,
       HistoryItemData.NOT_DELETED
     );
@@ -63,10 +62,14 @@ public class VkChannelFollowEventHandler
   }
 
   @Serdeable
-  public record VkChannelFollowEvent(
+  public record KickKicksGiftedEvent(
     String id,
     String recipientId,
-    String username,
-    Instant timestamp
-  ) {}
+    String senderUsername,
+    String giftName,
+    String giftType,
+    String giftTier,
+    Integer amount,
+    Instant createdAt
+  ) implements HasRecipientId {}
 }
