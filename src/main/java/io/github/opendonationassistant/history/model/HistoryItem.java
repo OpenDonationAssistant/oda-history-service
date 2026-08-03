@@ -71,7 +71,12 @@ public class HistoryItem {
         data.id(),
         data.recipientId(),
         data.system(),
-        data.originId()
+        data.originId(),
+        data
+          .goals()
+          .stream()
+          .map(it -> new DeletedHistoryItem.Goal(it.goalId()))
+          .toList()
       )
     );
   }
