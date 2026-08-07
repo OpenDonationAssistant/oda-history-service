@@ -56,9 +56,9 @@ public class Application {
           )
         ),
         Exchange.Exchange("payments", Map.of("event.PaymentEvent", events)),
-        Exchange.Exchange("twitch", Map.of("*", events)),
-        Exchange.Exchange("vklive", Map.of("*", events)),
-        Exchange.Exchange("kick", Map.of("*", events)),
+        Exchange.Exchange("twitch", Map.of("event.*", events)),
+        Exchange.Exchange("vklive", Map.of("event.*", events)),
+        Exchange.Exchange("kick", Map.of("event.*", events)),
         Exchange.Exchange(
           "history",
           Map.of(
