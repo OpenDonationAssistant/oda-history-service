@@ -21,7 +21,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@OpenAPIDefinition(info = @Info(title = "oda-history-service"))
+@OpenAPIDefinition(
+  info = @Info(
+    title = "oda-history-service",
+    version = "0.19.0",
+    license = @License(
+      name = "AGPL-3.0",
+      url = "https://www.gnu.org/licenses/agpl-3.0.en.html"
+    )
+  )
+)
 @Factory
 public class Application {
 
