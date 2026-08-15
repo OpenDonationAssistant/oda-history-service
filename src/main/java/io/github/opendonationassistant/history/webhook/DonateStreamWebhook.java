@@ -87,7 +87,8 @@ public class DonateStreamWebhook {
           null,
           null,
           null,
-          HistoryItemData.NOT_DELETED
+          HistoryItemData.NOT_DELETED,
+          Map.of()
         )
       )
       .join();

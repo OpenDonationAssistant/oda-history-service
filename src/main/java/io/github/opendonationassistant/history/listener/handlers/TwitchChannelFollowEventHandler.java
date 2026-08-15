@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Singleton
 public class TwitchChannelFollowEventHandler
@@ -54,7 +55,8 @@ public class TwitchChannelFollowEventHandler
       null,
       null,
       null,
-      HistoryItemData.NOT_DELETED
+      HistoryItemData.NOT_DELETED,
+      Map.of()
     );
     repository.create(data).join();
   }

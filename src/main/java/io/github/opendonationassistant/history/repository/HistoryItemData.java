@@ -58,7 +58,10 @@ public record HistoryItemData(
   @Nullable @MappedProperty("level_name") String levelName,
   @MappedProperty("deleted")
   @Schema(description = "Soft-delete flag for history item")
-  boolean deleted
+  boolean deleted,
+  @MappedProperty(type = DataType.JSON)
+  @Schema(description = "Additional metadata associated with the history item")
+  Map<String, Object> metadata
 )
   implements HistoryItemDataWither {
 

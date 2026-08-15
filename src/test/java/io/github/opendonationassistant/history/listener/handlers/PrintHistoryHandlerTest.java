@@ -40,6 +40,7 @@ public class PrintHistoryHandlerTest {
     .set(field(HistoryItemData::attachments), List.of())
     .set(field(HistoryItemData::alerts), List.of())
     .set(field(HistoryItemData::vote), null)
+    .set(field(HistoryItemData::metadata), Map.of())
     .set(field(HistoryItemData::system), "ODA")
     .set(field(HistoryItemData::type), "payment")
     .toModel();

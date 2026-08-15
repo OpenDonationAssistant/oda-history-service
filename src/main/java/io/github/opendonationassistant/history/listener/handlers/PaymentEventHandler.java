@@ -58,7 +58,8 @@ public class PaymentEventHandler extends AbstractMessageHandler<PaymentEvent> {
       null,
       null,
       null,
-      HistoryItemData.NOT_DELETED
+      HistoryItemData.NOT_DELETED,
+      Map.of()
     );
     repository.create(data).join();
     sendEvent(

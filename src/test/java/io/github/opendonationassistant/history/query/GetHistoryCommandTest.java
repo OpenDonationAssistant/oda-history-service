@@ -46,6 +46,7 @@ public class GetHistoryCommandTest {
     var shouldNotBeFound = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::system), "ODA")
       .set(field(HistoryItemData::actions), List.of())
+      .set(field(HistoryItemData::metadata), Map.of())
       .stream()
       .limit(10);
     shouldNotBeFound.forEach(it -> repository.create(it).join());
@@ -53,6 +54,7 @@ public class GetHistoryCommandTest {
     var shouldBeFound = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::recipientId), recipientId)
       .set(field(HistoryItemData::actions), List.of())
+      .set(field(HistoryItemData::metadata), Map.of())
       .set(
         field(HistoryItemData::timestamp),
         Instant.parse("2022-01-01T00:00:00.000Z")
@@ -83,6 +85,7 @@ public class GetHistoryCommandTest {
       Instancio.of(HistoryItemData.class)
         .set(field(HistoryItemData::recipientId), recipientId)
         .set(field(HistoryItemData::actions), List.of())
+        .set(field(HistoryItemData::metadata), Map.of())
         .set(
           field(HistoryItemData::timestamp),
           Instant.parse("2022-01-01T00:00:00.000Z")

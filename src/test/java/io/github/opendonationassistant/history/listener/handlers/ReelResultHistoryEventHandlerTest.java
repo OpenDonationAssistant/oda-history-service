@@ -39,6 +39,7 @@ public class ReelResultHistoryEventHandlerTest {
       .set(field(HistoryItemData::originId), originId)
       .set(field(HistoryItemData::reelResults), List.of())
       .set(field(HistoryItemData::actions), List.of())
+      .set(field(HistoryItemData::metadata), Map.of())
       .create();
     repository
       .create(historyItemData)
