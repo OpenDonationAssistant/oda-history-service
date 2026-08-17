@@ -20,6 +20,7 @@ public class HistoryItem {
   private HistoryItemData data;
   private HistoryItemDataRepository repository;
   private HistoryFacade facade;
+  private List<ItemAction> itemActions;
 
   public HistoryItem(
     HistoryItemDataRepository repository,
@@ -29,11 +30,19 @@ public class HistoryItem {
     this.repository = repository;
     this.data = data;
     this.facade = facade;
+    this.itemActions = List.of();
   }
 
   public HistoryItemData data() {
     return this.data;
   }
+
+  public List<ItemAction> itemActions() {
+    return this.itemActions;
+  }
+
+  @Serdeable
+  public record ItemAction(String id, String code, String name) {}
 
   public void addActions(List<HistoryItemData.ActionRequest> actions) {
     var mergedActions = new ArrayList<>(data.actions());

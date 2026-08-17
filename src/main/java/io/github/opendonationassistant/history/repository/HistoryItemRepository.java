@@ -3,7 +3,26 @@ package io.github.opendonationassistant.history.repository;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
+import io.github.opendonationassistant.history.model.DonateStreamPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.DonationAlertsPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.DonatePayEuPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.DonatePayPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.DonateXPaymentHistoryItem;
 import io.github.opendonationassistant.history.model.HistoryItem;
+import io.github.opendonationassistant.history.model.KickFollowHistoryItem;
+import io.github.opendonationassistant.history.model.KickKicksGiftedHistoryItem;
+import io.github.opendonationassistant.history.model.KickSubscriptionGiftHistoryItem;
+import io.github.opendonationassistant.history.model.KickSubscriptionHistoryItem;
+import io.github.opendonationassistant.history.model.ODAPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.TributePaymentHistoryItem;
+import io.github.opendonationassistant.history.model.TwitchBanHistoryItem;
+import io.github.opendonationassistant.history.model.TwitchCheerHistoryItem;
+import io.github.opendonationassistant.history.model.TwitchFollowHistoryItem;
+import io.github.opendonationassistant.history.model.TwitchRaidHistoryItem;
+import io.github.opendonationassistant.history.model.TwitchSubscriptionGiftHistoryItem;
+import io.github.opendonationassistant.history.model.TwitchSubscriptionHistoryItem;
+import io.github.opendonationassistant.history.model.VKLiveFollowHistoryItem;
+import io.github.opendonationassistant.history.model.VKLiveSubscriptionHistoryItem;
 import io.micronaut.context.annotation.Mapper;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.model.Page;
@@ -125,7 +144,47 @@ public class HistoryItemRepository {
   }
 
   private HistoryItem convert(HistoryItemData data) {
-    return new HistoryItem(repository, data, facade);
+    return switch (data.system() + ":" + data.type()) {
+      case "ODA:payment" ->
+        new ODAPaymentHistoryItem(repository, data, facade);
+      case "Twitch:follow" ->
+        new TwitchFollowHistoryItem(repository, data, facade);
+      case "Twitch:raid" ->
+        new TwitchRaidHistoryItem(repository, data, facade);
+      case "Twitch:cheer" ->
+        new TwitchCheerHistoryItem(repository, data, facade);
+      case "Twitch:subscription-gift" ->
+        new TwitchSubscriptionGiftHistoryItem(repository, data, facade);
+      case "Twitch:subscription" ->
+        new TwitchSubscriptionHistoryItem(repository, data, facade);
+      case "Twitch:ban" ->
+        new TwitchBanHistoryItem(repository, data, facade);
+      case "kick:follow" ->
+        new KickFollowHistoryItem(repository, data, facade);
+      case "Kick:subscription" ->
+        new KickSubscriptionHistoryItem(repository, data, facade);
+      case "Kick:subscription-gift" ->
+        new KickSubscriptionGiftHistoryItem(repository, data, facade);
+      case "Kick:kick-gift" ->
+        new KickKicksGiftedHistoryItem(repository, data, facade);
+      case "VKLive:follow" ->
+        new VKLiveFollowHistoryItem(repository, data, facade);
+      case "VKLive:subscription" ->
+        new VKLiveSubscriptionHistoryItem(repository, data, facade);
+      case "Donate.Stream:payment" ->
+        new DonateStreamPaymentHistoryItem(repository, data, facade);
+      case "DonationAlerts:payment" ->
+        new DonationAlertsPaymentHistoryItem(repository, data, facade);
+      case "DonateX:payment" ->
+        new DonateXPaymentHistoryItem(repository, data, facade);
+      case "DonatePay:payment" ->
+        new DonatePayPaymentHistoryItem(repository, data, facade);
+      case "DonatePay.eu:payment" ->
+        new DonatePayEuPaymentHistoryItem(repository, data, facade);
+      case "Tribute:payment" ->
+        new TributePaymentHistoryItem(repository, data, facade);
+      default -> new HistoryItem(repository, data, facade);
+    };
   }
 
   public static interface HistoryItemDataToEventMapper {
