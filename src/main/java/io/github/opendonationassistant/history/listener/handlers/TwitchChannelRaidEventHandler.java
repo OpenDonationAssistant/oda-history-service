@@ -66,7 +66,7 @@ public class TwitchChannelRaidEventHandler
       null,
       null,
       HistoryItemData.NOT_DELETED,
-      Map.of()
+      Map.of("fromChannelId", event.fromChannelId())
     );
     repository.create(data).join();
   }

@@ -7,11 +7,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import io.github.opendonationassistant.events.history.HistoryFacade;
-import io.github.opendonationassistant.history.model.DonateStreamPaymentHistoryItem;
-import io.github.opendonationassistant.history.model.DonationAlertsPaymentHistoryItem;
 import io.github.opendonationassistant.history.model.DonatePayEuPaymentHistoryItem;
 import io.github.opendonationassistant.history.model.DonatePayPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.DonateStreamPaymentHistoryItem;
 import io.github.opendonationassistant.history.model.DonateXPaymentHistoryItem;
+import io.github.opendonationassistant.history.model.DonationAlertsPaymentHistoryItem;
 import io.github.opendonationassistant.history.model.HistoryItem;
 import io.github.opendonationassistant.history.model.KickFollowHistoryItem;
 import io.github.opendonationassistant.history.model.KickKicksGiftedHistoryItem;
@@ -27,6 +27,7 @@ import io.github.opendonationassistant.history.model.TwitchSubscriptionGiftHisto
 import io.github.opendonationassistant.history.model.TwitchSubscriptionHistoryItem;
 import io.github.opendonationassistant.history.model.VKLiveFollowHistoryItem;
 import io.github.opendonationassistant.history.model.VKLiveSubscriptionHistoryItem;
+import io.github.opendonationassistant.rabbit.RabbitClient;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,11 +37,15 @@ import org.junit.jupiter.api.Test;
 
 public class HistoryItemRepositoryTest {
 
-  HistoryItemDataRepository dataRepository = mock(HistoryItemDataRepository.class);
+  HistoryItemDataRepository dataRepository = mock(
+    HistoryItemDataRepository.class
+  );
   HistoryFacade facade = mock(HistoryFacade.class);
+  RabbitClient commands = mock(RabbitClient.class);
   HistoryItemRepository repository = new HistoryItemRepository(
     dataRepository,
-    facade
+    facade,
+    commands
   );
 
   @Test
@@ -106,10 +111,11 @@ public class HistoryItemRepositoryTest {
     cases.forEach(entry -> {
       String system = (String) entry[0];
       String type = (String) entry[1];
-      Class<? extends HistoryItem> expected = (Class<? extends HistoryItem>) entry[2];
+      Class<? extends HistoryItem> expected = (Class<
+          ? extends HistoryItem
+        >) entry[2];
 
-      var data = Instancio
-        .of(HistoryItemData.class)
+      var data = Instancio.of(HistoryItemData.class)
         .set(field(HistoryItemData::system), system)
         .set(field(HistoryItemData::type), type)
         .set(field(HistoryItemData::actions), List.of())
@@ -126,8 +132,7 @@ public class HistoryItemRepositoryTest {
 
   @Test
   public void testConvertFallsBackToBaseItemForUnknownCase() {
-    var data = Instancio
-      .of(HistoryItemData.class)
+    var data = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::system), "Unknown")
       .set(field(HistoryItemData::type), "unknown")
       .set(field(HistoryItemData::actions), List.of())
@@ -143,8 +148,7 @@ public class HistoryItemRepositoryTest {
 
   @Test
   public void testConvertFallsBackToBaseItemForNullSystem() {
-    var data = Instancio
-      .of(HistoryItemData.class)
+    var data = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::system), null)
       .set(field(HistoryItemData::type), "payment")
       .set(field(HistoryItemData::actions), List.of())

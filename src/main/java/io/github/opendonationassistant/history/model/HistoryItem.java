@@ -12,6 +12,7 @@ import io.micronaut.serde.annotation.Serdeable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Serdeable
 public class HistoryItem {
@@ -37,12 +38,16 @@ public class HistoryItem {
     return this.data;
   }
 
+  @Serdeable
+  public record ItemAction(String id, String code, String name) {}
+
   public List<ItemAction> itemActions() {
     return this.itemActions;
   }
 
-  @Serdeable
-  public record ItemAction(String id, String code, String name) {}
+  public CompletableFuture<Void> executeItemAction(String itemActionId) {
+    return CompletableFuture.completedFuture(null);
+  }
 
   public void addActions(List<HistoryItemData.ActionRequest> actions) {
     var mergedActions = new ArrayList<>(data.actions());
