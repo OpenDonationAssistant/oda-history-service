@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.opendonationassistant.history.repository.TwitchIdMappingData;
@@ -55,6 +56,23 @@ public class TokenSettingsChangedHandlerTest {
     handler.handle(message());
 
     verify(repository).link("recipient-1", TOKEN_ID);
+  }
+
+  @Test
+  public void testDoesNotCreateMappingForOtherSystems() throws IOException {
+    var message = new TokenSettingsChangedHandler.TokenSettingsChanged(
+      TOKEN_ID.toString(),
+      "refreshToken",
+      "recipient-1",
+      "Kick",
+      true,
+      false,
+      Map.of()
+    );
+
+    handler.handle(message);
+
+    verifyNoInteractions(repository);
   }
 
   @Test

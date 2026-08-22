@@ -44,6 +44,9 @@ public class TokenSettingsChangedHandler
 
   @Override
   public void handle(TokenSettingsChanged message) throws IOException {
+    if (!"Twitch".equals(message.system())) {
+      return;
+    }
     var recipientId = message.recipientId();
     if (repository.findByRecipientId(recipientId).isPresent()) {
       return;
