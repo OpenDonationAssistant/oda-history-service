@@ -3,6 +3,7 @@ package io.github.opendonationassistant.history.model;
 import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemDataRepository;
+import io.github.opendonationassistant.history.repository.TwitchIdMappingRepository;
 import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.micronaut.serde.annotation.Serdeable;
 import java.util.List;
@@ -15,19 +16,29 @@ public class TwitchRaidHistoryItem extends HistoryItem {
   );
 
   private final RabbitClient commands;
+  private final TwitchIdMappingRepository twitchIdMappingRepository;
 
   public TwitchRaidHistoryItem(
     HistoryItemDataRepository repository,
     HistoryItemData data,
     HistoryFacade facade,
-    RabbitClient commands
+    RabbitClient commands,
+    TwitchIdMappingRepository twitchIdMappingRepository
   ) {
     super(repository, data, facade);
     this.commands = commands;
+    this.twitchIdMappingRepository = twitchIdMappingRepository;
   }
 
   @Override
   public List<ItemAction> itemActions() {
+    if (
+      twitchIdMappingRepository
+        .findByRecipientId(data().recipientId())
+        .isEmpty()
+    ) {
+      return List.of();
+    }
     return this.itemActions;
   }
 

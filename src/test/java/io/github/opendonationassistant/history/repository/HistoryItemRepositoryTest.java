@@ -42,10 +42,14 @@ public class HistoryItemRepositoryTest {
   );
   HistoryFacade facade = mock(HistoryFacade.class);
   RabbitClient commands = mock(RabbitClient.class);
+  TwitchIdMappingRepository twitchIdMappingRepository = mock(
+    TwitchIdMappingRepository.class
+  );
   HistoryItemRepository repository = new HistoryItemRepository(
     dataRepository,
     facade,
-    commands
+    commands,
+    twitchIdMappingRepository
   );
 
   @Test

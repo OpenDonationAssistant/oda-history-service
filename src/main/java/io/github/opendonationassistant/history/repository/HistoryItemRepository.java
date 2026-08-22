@@ -46,16 +46,19 @@ public class HistoryItemRepository {
   private final HistoryItemDataRepository repository;
   private final HistoryFacade facade;
   private final RabbitClient commands;
+  private final TwitchIdMappingRepository twitchIdMappingRepository;
 
   @Inject
   public HistoryItemRepository(
     HistoryItemDataRepository repository,
     HistoryFacade facade,
-    @Named("commands") RabbitClient commands
+    @Named("commands") RabbitClient commands,
+    TwitchIdMappingRepository twitchIdMappingRepository
   ) {
     this.repository = repository;
     this.facade = facade;
     this.commands = commands;
+    this.twitchIdMappingRepository = twitchIdMappingRepository;
   }
 
   public Optional<HistoryItem> findById(@Nullable String historyItemId) {
@@ -160,7 +163,8 @@ public class HistoryItemRepository {
         repository,
         data,
         facade,
-        commands
+        commands,
+        twitchIdMappingRepository
       );
       case "Twitch:cheer" -> new TwitchCheerHistoryItem(
         repository,
