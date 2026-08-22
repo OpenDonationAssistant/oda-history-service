@@ -6,6 +6,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import io.micronaut.data.repository.jpa.JpaSpecificationExecutor;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,9 @@ public interface HistoryItemDataRepository
   );
 
   public Optional<HistoryItemData> findByOriginId(String originId);
+
+  public List<HistoryItemData> findByRecipientIdAndTimestampGreaterThanEqualOrderByTimestampAsc(
+    String recipientId,
+    Instant from
+  );
 }

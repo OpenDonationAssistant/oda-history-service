@@ -1,5 +1,6 @@
 package io.github.opendonationassistant;
 
+import io.github.opendonationassistant.history.listener.handlers.DumpHistoryRequestHandler;
 import io.github.opendonationassistant.history.model.Printer.PrintableData;
 import io.github.opendonationassistant.rabbit.AMQPConfiguration;
 import io.github.opendonationassistant.rabbit.Exchange;
@@ -53,6 +54,7 @@ public class Application {
     var events = new Queue("history.events");
     var commands = new Queue("history.command");
     var requests = new Queue("history.get");
+    var dumpRequests = new Queue(DumpHistoryRequestHandler.QUEUE_NAME);
     return new AMQPConfiguration(
       List.of(
         Exchange.Exchange(
@@ -89,7 +91,15 @@ public class Application {
           "actions",
           Map.of("event.ActionHistoryEvent", events)
         ),
-        Exchange.Exchange("rpc", Map.of("GetHistoryRequest", requests))
+        Exchange.Exchange(
+          "rpc",
+          Map.of(
+            "GetHistoryRequest",
+            requests,
+            "DumpHistoryRequest",
+            dumpRequests
+          )
+        )
       )
     );
   }

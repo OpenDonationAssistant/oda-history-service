@@ -80,7 +80,9 @@ public interface AddHistoryItemApi {
     @Schema(description = "Event type") String event,
     @Nullable @Schema(description = "Related item count") Integer count,
     @Nullable @Schema(description = "Boosty subscription level") Integer level,
-    @Nullable @Schema(description = "Boosty subscription level name") String levelName,
+    @Nullable @Schema(
+      description = "Boosty subscription level name"
+    ) String levelName,
     @Schema(description = "Whether to trigger an alert") boolean triggerAlert,
     @Schema(description = "Whether to trigger a reel") boolean triggerReel,
     @Schema(
@@ -91,7 +93,9 @@ public interface AddHistoryItemApi {
   ) {
     @Serdeable
     @Schema(description = "Media attachment")
-    public record Attachment(@Schema(description = "Attachment ID") String id) {}
+    public record Attachment(
+      @Schema(description = "Attachment ID") String id
+    ) {}
 
     @Serdeable
     @Schema(description = "Reel result from social media")
@@ -118,7 +122,9 @@ public interface AddHistoryItemApi {
 
     @Serdeable
     @Schema(description = "Alert media")
-    public record AlertMedia(@Schema(description = "Alert media URL") String url) {}
+    public record AlertMedia(
+      @Schema(description = "Alert media URL") String url
+    ) {}
 
     @Serdeable
     @Schema(description = "Vote information")
