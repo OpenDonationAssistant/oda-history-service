@@ -92,6 +92,10 @@ public class Application {
           Map.of("event.ActionHistoryEvent", events)
         ),
         Exchange.Exchange(
+          "recipient",
+          Map.of("event.TokenSettingsChanged", events)
+        ),
+        Exchange.Exchange(
           "rpc",
           Map.of(
             "GetHistoryRequest",
