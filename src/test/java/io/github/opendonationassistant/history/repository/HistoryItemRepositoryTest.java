@@ -27,7 +27,9 @@ import io.github.opendonationassistant.history.model.TwitchSubscriptionGiftHisto
 import io.github.opendonationassistant.history.model.TwitchSubscriptionHistoryItem;
 import io.github.opendonationassistant.history.model.VKLiveFollowHistoryItem;
 import io.github.opendonationassistant.history.model.VKLiveSubscriptionHistoryItem;
+import io.github.opendonationassistant.history.metrics.HistoryMetrics;
 import io.github.opendonationassistant.rabbit.RabbitClient;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +51,8 @@ public class HistoryItemRepositoryTest {
     dataRepository,
     facade,
     commands,
-    twitchIdMappingRepository
+    twitchIdMappingRepository,
+    new HistoryMetrics(new SimpleMeterRegistry())
   );
 
   @Test

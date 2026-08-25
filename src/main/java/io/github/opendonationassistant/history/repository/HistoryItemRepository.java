@@ -23,6 +23,7 @@ import io.github.opendonationassistant.history.model.TwitchSubscriptionGiftHisto
 import io.github.opendonationassistant.history.model.TwitchSubscriptionHistoryItem;
 import io.github.opendonationassistant.history.model.VKLiveFollowHistoryItem;
 import io.github.opendonationassistant.history.model.VKLiveSubscriptionHistoryItem;
+import io.github.opendonationassistant.history.metrics.HistoryMetrics;
 import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.micronaut.context.annotation.Mapper;
 import io.micronaut.core.annotation.NonNull;
@@ -47,18 +48,21 @@ public class HistoryItemRepository {
   private final HistoryFacade facade;
   private final RabbitClient commands;
   private final TwitchIdMappingRepository twitchIdMappingRepository;
+  private final HistoryMetrics metrics;
 
   @Inject
   public HistoryItemRepository(
     HistoryItemDataRepository repository,
     HistoryFacade facade,
     @Named("commands") RabbitClient commands,
-    TwitchIdMappingRepository twitchIdMappingRepository
+    TwitchIdMappingRepository twitchIdMappingRepository,
+    HistoryMetrics metrics
   ) {
     this.repository = repository;
     this.facade = facade;
     this.commands = commands;
     this.twitchIdMappingRepository = twitchIdMappingRepository;
+    this.metrics = metrics;
   }
 
   public Optional<HistoryItem> findById(@Nullable String historyItemId) {
@@ -79,6 +83,7 @@ public class HistoryItemRepository {
   public CompletableFuture<HistoryItem> create(HistoryItemData data) {
     log.debug("Saving history item", Map.of("data", data));
     repository.save(data);
+    metrics.itemCreated(data.system(), data.type());
     return facade
       .sendEvent(
         new HistoryItemEvent(
