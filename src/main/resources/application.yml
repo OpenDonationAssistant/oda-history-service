@@ -24,6 +24,12 @@ micronaut:
     event-listener:
       type: fixed
       nThreads: 1
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        step: PT1M
 endpoints:
   all:
     enabled: true
