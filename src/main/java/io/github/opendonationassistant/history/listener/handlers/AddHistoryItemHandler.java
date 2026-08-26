@@ -88,11 +88,7 @@ public class AddHistoryItemHandler
       Map.of()
     );
     CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
-    if (
-      command.addToGoal() &&
-      command.goals() != null &&
-      command.goals().size() > 0
-    ) {
+    if (command.goals() != null && command.goals().size() > 0) {
       chain = chain.thenRunAsync(() ->
         goalFacade.run(
           new CountPaymentInSpecifiedGoalCommand(
