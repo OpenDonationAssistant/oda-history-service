@@ -7,11 +7,13 @@ import io.github.opendonationassistant.events.history.event.HistoryItemEvent.Vot
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemData.ActionRequest;
 import io.github.opendonationassistant.history.repository.HistoryItemDataRepository;
+import io.github.opendonationassistant.rabbit.Exchange;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +23,13 @@ public class DumpHistoryRequestHandler {
 
   private final ODALogger log = new ODALogger(this);
   public static final String QUEUE_NAME = "history.dump";
+  public static final io.github.opendonationassistant.rabbit.Queue QUEUE =
+    new io.github.opendonationassistant.rabbit.Queue(
+      DumpHistoryRequestHandler.QUEUE_NAME
+    );
+  public static final List<Exchange> BINDING = List.of(
+    Exchange.Exchange("rpc", Map.of("DumpHistoryRequest", QUEUE))
+  );
 
   private final HistoryItemDataRepository repository;
   private final HistoryFacade facade;
@@ -35,7 +44,11 @@ public class DumpHistoryRequestHandler {
   }
 
   @Serdeable
-  public static record DumpHistoryRequest(String recipientId, Instant from) {}
+  public static record DumpHistoryRequest(
+    String recipientId,
+    Instant from,
+    List<String> events
+  ) {}
 
   @Serdeable
   public static record DumpHistoryResponse(int count) {}
@@ -43,8 +56,9 @@ public class DumpHistoryRequestHandler {
   @Queue(QUEUE_NAME)
   public DumpHistoryResponse handle(DumpHistoryRequest request) {
     var items =
-      repository.findByRecipientIdAndTimestampGreaterThanEqualOrderByTimestampAsc(
+      repository.findByRecipientIdAndTypeInAndTimestampGreaterThanEqualOrderByTimestampAsc(
         request.recipientId(),
+        request.events(),
         request.from()
       );
     items.forEach(item -> facade.sendEvent(toEvent(item)).join());
@@ -90,8 +104,7 @@ public class DumpHistoryRequestHandler {
   }
 
   private @Nullable Vote toVote(HistoryItemData data) {
-    return Optional
-      .ofNullable(data.vote())
+    return Optional.ofNullable(data.vote())
       .map(it -> new HistoryItemEvent.Vote(it.id(), it.name(), it.isNew()))
       .orElse(null);
   }

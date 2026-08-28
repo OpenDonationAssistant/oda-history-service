@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.info.*;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +55,9 @@ public class Application {
     var events = new Queue("history.events");
     var commands = new Queue("history.command");
     var requests = new Queue("history.get");
-    var dumpRequests = new Queue(DumpHistoryRequestHandler.QUEUE_NAME);
-    return new AMQPConfiguration(
+    var bindings = new ArrayList<Exchange>();
+    bindings.addAll(DumpHistoryRequestHandler.BINDING);
+    bindings.addAll(
       List.of(
         Exchange.Exchange(
           "commands",
@@ -95,17 +97,10 @@ public class Application {
           "recipient",
           Map.of("event.TokenSettingsChanged", events)
         ),
-        Exchange.Exchange(
-          "rpc",
-          Map.of(
-            "GetHistoryRequest",
-            requests,
-            "DumpHistoryRequest",
-            dumpRequests
-          )
-        )
+        Exchange.Exchange("rpc", Map.of("GetHistoryRequest", requests))
       )
     );
+    return new AMQPConfiguration(bindings);
   }
 
   @Singleton

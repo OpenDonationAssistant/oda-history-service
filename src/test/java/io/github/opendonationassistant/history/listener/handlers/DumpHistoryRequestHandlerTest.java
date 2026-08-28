@@ -38,8 +38,7 @@ public class DumpHistoryRequestHandlerTest {
   @Test
   public void testDumpPublishesAllItemsFromTimestamp() {
     var from = Instant.parse("2024-01-01T00:00:00Z");
-    var item1 = Instancio
-      .of(HistoryItemData.class)
+    var item1 = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::id), "item-1")
       .set(field(HistoryItemData::type), "payment")
       .set(field(HistoryItemData::recipientId), "recipient-1")
@@ -57,8 +56,7 @@ public class DumpHistoryRequestHandlerTest {
       .set(field(HistoryItemData::vote), null)
       .set(field(HistoryItemData::metadata), Map.of())
       .create();
-    var item2 = Instancio
-      .of(HistoryItemData.class)
+    var item2 = Instancio.of(HistoryItemData.class)
       .set(field(HistoryItemData::id), "item-2")
       .set(field(HistoryItemData::type), "follow")
       .set(field(HistoryItemData::recipientId), "recipient-1")
@@ -77,7 +75,8 @@ public class DumpHistoryRequestHandlerTest {
       .set(field(HistoryItemData::metadata), Map.of())
       .create();
     when(
-      repository.findByRecipientIdAndTimestampGreaterThanEqualOrderByTimestampAsc(
+      repository.findByRecipientIdAndTypeInAndTimestampGreaterThanEqualOrderByTimestampAsc(
+        any(),
         any(),
         any()
       )
@@ -87,12 +86,19 @@ public class DumpHistoryRequestHandlerTest {
     );
 
     var response = handler.handle(
-      new DumpHistoryRequestHandler.DumpHistoryRequest("recipient-1", from)
+      new DumpHistoryRequestHandler.DumpHistoryRequest(
+        "recipient-1",
+        from,
+        List.of("payment", "follow")
+      )
     );
 
     assertEquals(2, response.count());
-    verify(repository).findByRecipientIdAndTimestampGreaterThanEqualOrderByTimestampAsc(
+    verify(
+      repository
+    ).findByRecipientIdAndTypeInAndTimestampGreaterThanEqualOrderByTimestampAsc(
       "recipient-1",
+      List.of("payment", "follow"),
       from
     );
     verify(facade).sendEvent(argThat(payload -> matches(item1, payload)));
@@ -104,14 +110,19 @@ public class DumpHistoryRequestHandlerTest {
   public void testDumpPublishesNothingWhenNoItems() {
     var from = Instant.parse("2024-01-01T00:00:00Z");
     when(
-      repository.findByRecipientIdAndTimestampGreaterThanEqualOrderByTimestampAsc(
-        "recipient-1",
-        from
+      repository.findByRecipientIdAndTypeInAndTimestampGreaterThanEqualOrderByTimestampAsc(
+        any(),
+        any(),
+        any()
       )
     ).thenReturn(List.of());
 
     var response = handler.handle(
-      new DumpHistoryRequestHandler.DumpHistoryRequest("recipient-1", from)
+      new DumpHistoryRequestHandler.DumpHistoryRequest(
+        "recipient-1",
+        from,
+        List.of("payment")
+      )
     );
 
     assertEquals(0, response.count());
@@ -123,7 +134,8 @@ public class DumpHistoryRequestHandlerTest {
     if (!(payload instanceof HistoryItemEvent event)) {
       return false;
     }
-    return event.id().equals(item.id()) &&
+    return (
+      event.id().equals(item.id()) &&
       event.type().equals(item.type()) &&
       event.recipientId().equals(item.recipientId()) &&
       event.system().equals(item.system()) &&
@@ -146,11 +158,11 @@ public class DumpHistoryRequestHandlerTest {
         ) &&
       Objects.equals(
         event.vote(),
-        Optional
-          .ofNullable(item.vote())
+        Optional.ofNullable(item.vote())
           .map(v -> new HistoryItemEvent.Vote(v.id(), v.name(), v.isNew()))
           .orElse(null)
-      );
+      )
+    );
   }
 
   private static HistoryItemEvent.ActionRequest toAction(ActionRequest a) {

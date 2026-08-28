@@ -28,8 +28,9 @@ public interface HistoryItemDataRepository
 
   public Optional<HistoryItemData> findByOriginId(String originId);
 
-  public List<HistoryItemData> findByRecipientIdAndTimestampGreaterThanEqualOrderByTimestampAsc(
+  public List<HistoryItemData> findByRecipientIdAndTypeInAndTimestampGreaterThanEqualOrderByTimestampAsc(
     String recipientId,
+    List<String> type,
     Instant from
   );
 }
