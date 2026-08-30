@@ -57,7 +57,14 @@ public class RepeatAlert extends BaseController implements RepeatAlertApi {
 
     log.info(
       "RepeatAlert: Sending RepeatAlertCommand",
-      Map.of("historyItemId", historyItemId, "originId", originId)
+      Map.of(
+        "historyItemId",
+        historyItemId,
+        "originId",
+        originId,
+        "recipientId",
+        recipientId
+      )
     );
 
     return CompletableFuture.supplyAsync(() -> {
