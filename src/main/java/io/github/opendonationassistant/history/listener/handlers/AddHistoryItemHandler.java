@@ -8,6 +8,7 @@ import io.github.opendonationassistant.events.HasRecipientId;
 import io.github.opendonationassistant.events.goal.GoalFacade;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInSpecifiedGoalCommand;
+import io.github.opendonationassistant.events.goal.GoalFacade.GoalCommandSender;
 import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.events.history.HistoryFacade.HistoryMessagingClient;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
@@ -15,9 +16,11 @@ import io.github.opendonationassistant.history.command.AddHistoryItemApi;
 import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHistoryItemCommand;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
+import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.micronaut.serde.ObjectMapper;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
@@ -36,7 +39,7 @@ public class AddHistoryItemHandler
   private final HistoryItemRepository repository;
   private final HistoryFacade facade;
   private final ObjectMapper mapper;
-  private final GoalFacade goalFacade;
+  private final RabbitClient commandsFacade;
 
   @Inject
   public AddHistoryItemHandler(
@@ -44,14 +47,14 @@ public class AddHistoryItemHandler
     HistoryMessagingClient messaging,
     HistoryItemRepository repository,
     HistoryFacade facade,
-    GoalFacade goalFacade
+    @Named("commands") RabbitClient commandsFacade
   ) {
     super(mapper);
     this.messaging = messaging;
     this.repository = repository;
     this.facade = facade;
     this.mapper = mapper;
-    this.goalFacade = goalFacade;
+    this.commandsFacade = commandsFacade;
   }
 
   @Override
@@ -90,7 +93,7 @@ public class AddHistoryItemHandler
     CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
     if (command.goals() != null && command.goals().size() > 0) {
       chain = chain.thenRunAsync(() ->
-        goalFacade.run(
+        commandsFacade.sendCommand(
           new CountPaymentInSpecifiedGoalCommand(
             paymentId,
             command.recipientId(),
@@ -105,7 +108,7 @@ public class AddHistoryItemHandler
       (command.goals() == null || command.goals().size() == 0)
     ) {
       chain = chain.thenRunAsync(() ->
-        goalFacade.run(
+        commandsFacade.sendCommand(
           new CountPaymentInDefaultGoalCommand(
             paymentId,
             command.recipientId(),
@@ -114,6 +117,15 @@ public class AddHistoryItemHandler
         )
       );
     }
+    chain = chain.thenRunAsync(() ->
+      commandsFacade.sendCommand(
+        new CountPaymentInGoalWithModeAll(
+          paymentId,
+          command.recipientId(),
+          command.amount()
+        )
+      )
+    );
     if (command.triggerDonaton()) {
       chain = chain.thenCompose(v ->
         facade.sendEvent(
@@ -213,6 +225,13 @@ public class AddHistoryItemHandler
       throw new RuntimeException(var4);
     }
   }
+
+  @Serdeable
+  public static record CountPaymentInGoalWithModeAll(
+    String paymentId,
+    @Nullable String recipientId,
+    Amount amount
+  ) {}
 
   @Serdeable
   public static record LinkReelCommand(

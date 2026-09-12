@@ -1,6 +1,7 @@
 package io.github.opendonationassistant.history.listener.handlers;
 
 import static io.github.opendonationassistant.history.listener.handlers.AddHistoryItemHandler.ChangeDonatonCommand;
+import static io.github.opendonationassistant.history.listener.handlers.AddHistoryItemHandler.CountPaymentInGoalWithModeAll;
 import static io.github.opendonationassistant.history.listener.handlers.AddHistoryItemHandler.CreateAlertCommand;
 import static io.github.opendonationassistant.history.listener.handlers.AddHistoryItemHandler.LinkReelCommand;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,6 +31,7 @@ import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHist
 import io.github.opendonationassistant.history.model.HistoryItem;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
+import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.micronaut.serde.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -49,7 +51,7 @@ public class AddHistoryItemHandlerTest {
   HistoryMessagingClient messaging = mock(HistoryMessagingClient.class);
   HistoryItemRepository repository = mock(HistoryItemRepository.class);
   HistoryFacade facade = mock(HistoryFacade.class);
-  GoalFacade goalFacade = mock(GoalFacade.class);
+  RabbitClient commandsFacade = mock(RabbitClient.class);
   AddHistoryItemHandler handler;
 
   @BeforeEach
@@ -59,7 +61,7 @@ public class AddHistoryItemHandlerTest {
       messaging,
       repository,
       facade,
-      goalFacade
+      commandsFacade
     );
     when(repository.findByOriginId(any())).thenReturn(Optional.empty());
     when(repository.create(any())).thenReturn(
@@ -110,7 +112,7 @@ public class AddHistoryItemHandlerTest {
       )
     );
 
-    verifyNoInteractions(repository, facade, goalFacade, messaging);
+    verifyNoInteractions(repository, facade, messaging, commandsFacade);
   }
 
   @Test
@@ -123,7 +125,7 @@ public class AddHistoryItemHandlerTest {
 
     verify(repository).findByOriginId("payment-1");
     verify(repository, never()).create(any());
-    verifyNoInteractions(facade, goalFacade, messaging);
+    verifyNoInteractions(facade, messaging, commandsFacade);
   }
 
   @Test
@@ -177,7 +179,7 @@ public class AddHistoryItemHandlerTest {
 
     handler.handle(command(List.of(goal), false, false, false, false, false));
 
-    verify(goalFacade).run(
+    verify(commandsFacade).sendCommand(
       new CountPaymentInSpecifiedGoalCommand(
         "payment-1",
         "recipient-1",
@@ -185,24 +187,25 @@ public class AddHistoryItemHandlerTest {
         new Amount(100, 1, "RUB")
       )
     );
-    verify(goalFacade, never()).run(any(CountPaymentInDefaultGoalCommand.class));
+    verify(commandsFacade, never()).sendCommand(
+      any(CountPaymentInDefaultGoalCommand.class)
+    );
   }
 
   @Test
   public void testCountsPaymentInDefaultGoalWhenAddToGoal() throws IOException {
     handler.handle(command(List.of(), true, false, false, false, false));
 
-    verify(goalFacade).run(
+    verify(commandsFacade).sendCommand(
       new CountPaymentInDefaultGoalCommand(
         "payment-1",
         "recipient-1",
         new Amount(100, 1, "RUB")
       )
     );
-    verify(
-      goalFacade,
-      never()
-    ).run(any(CountPaymentInSpecifiedGoalCommand.class));
+    verify(commandsFacade, never()).sendCommand(
+      any(CountPaymentInSpecifiedGoalCommand.class)
+    );
   }
 
   @Test
@@ -212,7 +215,7 @@ public class AddHistoryItemHandlerTest {
 
     handler.handle(command(List.of(goal), true, false, false, false, false));
 
-    verify(goalFacade).run(
+    verify(commandsFacade).sendCommand(
       new CountPaymentInSpecifiedGoalCommand(
         "payment-1",
         "recipient-1",
@@ -220,15 +223,35 @@ public class AddHistoryItemHandlerTest {
         new Amount(100, 1, "RUB")
       )
     );
-    verify(goalFacade, never()).run(any(CountPaymentInDefaultGoalCommand.class));
+    verify(commandsFacade, never()).sendCommand(
+      any(CountPaymentInDefaultGoalCommand.class)
+    );
   }
 
   @Test
   public void testDoesNotCountGoalsByDefault() throws IOException {
     handler.handle(command(List.of(), false, false, false, false, false));
 
-    verify(goalFacade, never()).run(any(CountPaymentInSpecifiedGoalCommand.class));
-    verify(goalFacade, never()).run(any(CountPaymentInDefaultGoalCommand.class));
+    verify(commandsFacade, never()).sendCommand(
+      any(CountPaymentInSpecifiedGoalCommand.class)
+    );
+    verify(commandsFacade, never()).sendCommand(
+      any(CountPaymentInDefaultGoalCommand.class)
+    );
+  }
+
+  @Test
+  public void testAlwaysCountsPaymentInAllModeGoals() throws IOException {
+    handler.handle(command(List.of(), false, false, false, false, false));
+
+    var argCaptor = ArgumentCaptor.forClass(
+      CountPaymentInGoalWithModeAll.class
+    );
+    verify(commandsFacade).sendCommand(argCaptor.capture());
+
+    assertEquals("payment-1", argCaptor.getValue().paymentId());
+    assertEquals("recipient-1", argCaptor.getValue().recipientId());
+    assertEquals(new Amount(100, 1, "RUB"), argCaptor.getValue().amount());
   }
 
   @Test
@@ -255,7 +278,7 @@ public class AddHistoryItemHandlerTest {
     );
 
     verify(repository).create(any(HistoryItemData.class));
-    verify(goalFacade).run(
+    verify(commandsFacade).sendCommand(
       new CountPaymentInDefaultGoalCommand(
         "payment-1",
         "recipient-1",
@@ -269,7 +292,11 @@ public class AddHistoryItemHandlerTest {
     handler.handle(command(List.of(), false, false, false, true, false));
 
     verify(facade).sendEvent(
-      new ChangeDonatonCommand("recipient-1", new Amount(100, 1, "RUB"), "payment-1")
+      new ChangeDonatonCommand(
+        "recipient-1",
+        new Amount(100, 1, "RUB"),
+        "payment-1"
+      )
     );
     verify(facade, times(1)).sendEvent(any());
   }
@@ -349,7 +376,11 @@ public class AddHistoryItemHandlerTest {
     handler.handle(bytes);
 
     verify(facade).sendEvent(
-      new ChangeDonatonCommand("recipient-1", new Amount(100, 1, "RUB"), "payment-1")
+      new ChangeDonatonCommand(
+        "recipient-1",
+        new Amount(100, 1, "RUB"),
+        "payment-1"
+      )
     );
   }
 
@@ -358,7 +389,7 @@ public class AddHistoryItemHandlerTest {
     handler.handle(fullTriggerCommand());
 
     verify(repository).create(any(HistoryItemData.class));
-    verify(goalFacade).run(
+    verify(commandsFacade).sendCommand(
       new CountPaymentInSpecifiedGoalCommand(
         "payment-1",
         "recipient-1",
@@ -366,9 +397,15 @@ public class AddHistoryItemHandlerTest {
         new Amount(100, 1, "RUB")
       )
     );
-    verify(goalFacade, never()).run(any(CountPaymentInDefaultGoalCommand.class));
+    verify(commandsFacade, never()).sendCommand(
+      any(CountPaymentInDefaultGoalCommand.class)
+    );
     verify(facade).sendEvent(
-      new ChangeDonatonCommand("recipient-1", new Amount(100, 1, "RUB"), "payment-1")
+      new ChangeDonatonCommand(
+        "recipient-1",
+        new Amount(100, 1, "RUB"),
+        "payment-1"
+      )
     );
     verify(facade).sendEvent(
       new CreateAlertCommand(
