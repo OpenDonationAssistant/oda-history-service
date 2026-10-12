@@ -32,7 +32,7 @@ public class AddHistoryItem
   @Override
   public CompletableFuture<HttpResponse<Void>> addHistoryItem(
     Authentication auth,
-    AddHistoryItemApi.AddHistoryItemCommand command
+    AddHistoryItemCommand command
   ) {
     var recipientId = getOwnerId(auth);
     if (recipientId.isEmpty()) {
@@ -43,7 +43,9 @@ public class AddHistoryItem
       return CompletableFuture.completedFuture(HttpResponse.badRequest());
     }
     return CompletableFuture.runAsync(() ->
-      this.commandsFacade.sendCommand(command)
+      this.commandsFacade.sendCommand(
+          command.withRecipientId(recipientId.get())
+        )
     ).thenApply(_ -> HttpResponse.ok());
   }
 }

@@ -19,15 +19,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.opendonationassistant.commons.Amount;
-import io.github.opendonationassistant.events.goal.GoalFacade;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInSpecifiedGoalCommand;
 import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.events.history.HistoryFacade.HistoryMessagingClient;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
-import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHistoryItemCommand;
-import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHistoryItemCommand.AlertMedia;
-import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHistoryItemCommand.TargetGoal;
+import io.github.opendonationassistant.history.command.AddHistoryItemCommand;
+import io.github.opendonationassistant.history.command.AddHistoryItemCommand.AlertMedia;
+import io.github.opendonationassistant.history.command.AddHistoryItemCommand.TargetGoal;
 import io.github.opendonationassistant.history.model.HistoryItem;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;

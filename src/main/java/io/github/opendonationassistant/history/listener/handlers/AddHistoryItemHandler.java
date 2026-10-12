@@ -5,15 +5,12 @@ import io.github.opendonationassistant.commons.Amount;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.AbstractMessageHandler;
 import io.github.opendonationassistant.events.HasRecipientId;
-import io.github.opendonationassistant.events.goal.GoalFacade;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInDefaultGoalCommand;
 import io.github.opendonationassistant.events.goal.GoalFacade.CountPaymentInSpecifiedGoalCommand;
-import io.github.opendonationassistant.events.goal.GoalFacade.GoalCommandSender;
 import io.github.opendonationassistant.events.history.HistoryFacade;
 import io.github.opendonationassistant.events.history.HistoryFacade.HistoryMessagingClient;
 import io.github.opendonationassistant.events.history.event.HistoryItemEvent;
-import io.github.opendonationassistant.history.command.AddHistoryItemApi;
-import io.github.opendonationassistant.history.command.AddHistoryItemApi.AddHistoryItemCommand;
+import io.github.opendonationassistant.history.command.AddHistoryItemCommand;
 import io.github.opendonationassistant.history.repository.HistoryItemData;
 import io.github.opendonationassistant.history.repository.HistoryItemRepository;
 import io.github.opendonationassistant.rabbit.RabbitClient;
@@ -32,7 +29,7 @@ import org.jspecify.annotations.Nullable;
 
 @Singleton
 public class AddHistoryItemHandler
-  extends AbstractMessageHandler<AddHistoryItemApi.AddHistoryItemCommand> {
+  extends AbstractMessageHandler<AddHistoryItemCommand> {
 
   private ODALogger log = new ODALogger(this);
   private final HistoryMessagingClient messaging;
